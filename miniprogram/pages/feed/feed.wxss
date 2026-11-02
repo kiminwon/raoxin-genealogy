@@ -1,0 +1,55 @@
+/* 家族动态：占位页。
+   一张空白谱纸 + 一枚印，不画时间线——画了却没有数据，
+   等于告诉用户"族里最近什么都没发生"。 */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 60rpx 120rpx;
+  box-sizing: border-box;
+}
+
+.hold {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 朱砂印：占位期的视觉主角，和族谱里的藏书印同一套语言 */
+.hold-mark {
+  width: 112rpx;
+  height: 112rpx;
+  line-height: 112rpx;
+  text-align: center;
+  font-size: 52rpx;
+  color: #A6321E;
+  border: 3rpx solid #A6321E;
+  border-radius: 10rpx;
+  font-family: "STSong", "SimSun", serif;
+  opacity: 0.9;
+}
+
+.hold-title {
+  margin-top: 36rpx;
+  font-size: 40rpx;
+  letter-spacing: 8rpx;
+  color: #2B574B;
+  font-family: "STSong", "SimSun", serif;
+}
+
+.hold-text {
+  margin-top: 22rpx;
+  font-size: 27rpx;
+  line-height: 1.85;
+  color: #5A5F66;
+  text-align: center;
+}
+
+.hold-note {
+  margin-top: 40rpx;
+  font-size: 22rpx;
+  letter-spacing: 3rpx;
+  color: #A8A29A;
+}

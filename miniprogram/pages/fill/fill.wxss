@@ -1,0 +1,291 @@
+.page {
+  min-height: 100vh;
+  background: var(--paper);
+}
+
+/* ============ 进度 ============ */
+
+.prog {
+  padding: 36rpx 40rpx 24rpx;
+  background: linear-gradient(180deg, #EDE8DB 0%, var(--paper) 100%);
+}
+
+.prog-bar {
+  height: 10rpx;
+  background: #E8E1D5;
+  border-radius: 5rpx;
+  overflow: hidden;
+}
+
+.prog-fill {
+  height: 100%;
+  background: var(--dai);
+  border-radius: 5rpx;
+  transition: width 0.4s ease;
+}
+
+.prog-txt {
+  margin-top: 16rpx;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.prog-name {
+  font-size: 26rpx;
+  color: var(--ink-2);
+}
+
+.prog-num {
+  font-size: 24rpx;
+  color: var(--ink-3);
+}
+
+/* ============ 问题 ============ */
+
+.q {
+  padding: 20rpx 40rpx 8rpx;
+}
+
+.q-idx {
+  font-size: 23rpx;
+  color: var(--ink-3);
+  letter-spacing: 1rpx;
+}
+
+.q-text {
+  margin-top: 14rpx;
+  font-size: 46rpx;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.45;
+  letter-spacing: 1rpx;
+}
+
+/* 「为什么问这个」。
+   用户不反感被问，反感的是莫名其妙被问——所以这一行不能省。 */
+.q-reason {
+  margin-top: 14rpx;
+  font-size: 26rpx;
+  color: var(--ink-3);
+  line-height: 1.6;
+}
+
+/* ============ 前后对比 ============ */
+
+.before {
+  margin: 28rpx 28rpx 0;
+  padding: 30rpx 32rpx;
+  background: #FFFFFF;
+  border: 1rpx solid #E8DCC0;
+  border-radius: 20rpx;
+}
+
+.before-row {
+  display: flex;
+  align-items: baseline;
+  gap: 20rpx;
+}
+
+.before-k {
+  width: 150rpx;
+  flex-shrink: 0;
+  font-size: 25rpx;
+  color: var(--ink-3);
+}
+
+.before-v {
+  font-size: 38rpx;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.before-old {
+  color: var(--ink-3);
+  text-decoration: line-through;
+  text-decoration-color: var(--line-2);
+}
+
+.before-new {
+  color: var(--dai);
+}
+
+.before-arrow {
+  margin: 10rpx 0 10rpx 150rpx;
+  font-size: 30rpx;
+  color: var(--line-2);
+  line-height: 1;
+}
+
+.before-hint {
+  margin-top: 22rpx;
+  padding-top: 22rpx;
+  border-top: 1rpx solid var(--line);
+  font-size: 25rpx;
+  color: #8A6A24;
+  line-height: 1.65;
+}
+
+/* ============ 表单 ============ */
+
+.ff {
+  padding: 22rpx 0;
+  border-bottom: 1rpx solid #EDE8DB;
+}
+
+.ff:last-of-type {
+  border-bottom: none;
+}
+
+.ff-label {
+  font-size: 27rpx;
+  color: var(--ink-2);
+  margin-bottom: 12rpx;
+}
+
+.ff-opt {
+  font-size: 22rpx;
+  color: var(--ink-3);
+  margin-left: 10rpx;
+}
+
+.ff-input,
+.ff-picker {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--paper-2);
+  border-radius: 12rpx;
+  padding: 20rpx 22rpx;
+  font-size: 32rpx;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.ff-input {
+  height: 88rpx;
+}
+
+.ff-tip {
+  margin-top: 22rpx;
+  font-size: 24rpx;
+  color: var(--ink-3);
+  line-height: 1.6;
+}
+
+/* ============ 底部 ============ */
+
+.ft-gap {
+  height: 220rpx;
+}
+
+.ft {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 20rpx;
+  padding: 20rpx 40rpx 24rpx;
+  background: rgba(251, 248, 243, 0.97);
+  border-top: 1rpx solid var(--line);
+}
+
+/* ============ 完成态 ============ */
+
+.done {
+  padding: 140rpx 60rpx 0;
+  text-align: center;
+}
+
+.done-mark {
+  width: 130rpx;
+  height: 130rpx;
+  margin: 0 auto 40rpx;
+  border-radius: 50%;
+  background: #E7EFEA;
+  color: var(--jade);
+  font-size: 68rpx;
+  line-height: 130rpx;
+}
+
+.done-title {
+  font-size: 42rpx;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.done-sub {
+  margin-top: 18rpx;
+  font-size: 28rpx;
+  color: var(--ink-2);
+  line-height: 1.7;
+}
+
+.done-btn {
+  margin-top: 56rpx;
+  width: 100%;
+}
+
+.done-tip {
+  margin-top: 32rpx;
+  font-size: 24rpx;
+  color: var(--ink-3);
+  line-height: 1.7;
+}
+
+/* ============ 成功浮层 ============ */
+
+.flash {
+  position: fixed;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%);
+  width: 260rpx;
+  height: 260rpx;
+  border-radius: 30rpx;
+  background: rgba(20, 26, 36, 0.86);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.flash-mark {
+  font-size: 76rpx;
+  color: #8FC7A8;
+  line-height: 1;
+}
+
+.flash-txt {
+  margin-top: 18rpx;
+  font-size: 30rpx;
+  color: #FFF;
+}
+
+/* ============ 其他 ============ */
+
+.loading {
+  padding: 80rpx 40rpx;
+}
+
+.sk-q {
+  height: 90rpx;
+  width: 80%;
+  margin-bottom: 34rpx;
+}
+
+.sk-l {
+  height: 38rpx;
+  margin-bottom: 24rpx;
+}
+
+.sk-short {
+  width: 60%;
+}
+
+.empty-btn {
+  margin: 32rpx auto 0;
+  width: 280rpx;
+}

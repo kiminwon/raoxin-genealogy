@@ -1,0 +1,31 @@
+# ---------- 部署凭据（绝不能提交）----------
+_deploy/deploy.env
+_deploy/*.local
+_deploy/.gen/
+
+# ---------- 环境变量 ----------
+.env
+.env.*
+!.env.example
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# ---------- 临时探针脚本 ----------
+_t_*.py
+
+# ---------- 生成的核对产物（可随时重跑 tools/ 里的脚本再生成）----------
+_verify/
+
+# ---------- 编辑器 / 系统 ----------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ---------- 小程序开发者工具 ----------
+miniprogram/project.private.config.json

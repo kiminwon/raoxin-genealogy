@@ -1,0 +1,94 @@
+<!--
+  底部半屏卡片。
+  点树上的节点就出这一张——它是「看树」和「填信息」之间的唯一桥梁。
+  刻意不做成整页跳转：用户点了爷爷，看完还想点旁边的叔叔，
+  整页跳转会让他每次都要退回来重新找位置。
+-->
+<view wx:if="{{show}}" class="ps-mask" catchtap="onMaskTap" catchtouchmove="noop"></view>
+
+<view class="ps {{show ? 'ps-in' : 'ps-out'}}" catchtouchmove="noop">
+  <!-- 把手：给长辈一个明确的"可以拖"的暗示 -->
+  <view class="ps-handle" catchtap="onClose">
+    <view class="ps-bar"></view>
+  </view>
+
+  <view wx:if="{{loading}}" class="ps-body">
+    <view class="skeleton ps-sk-name"></view>
+    <view class="skeleton ps-sk-line"></view>
+    <view class="skeleton ps-sk-line ps-sk-short"></view>
+  </view>
+
+  <block wx:elif="{{person}}">
+    <view class="ps-body">
+      <!-- 身份行 -->
+      <view class="ps-head">
+        <view class="ps-name-wrap">
+          <text class="ps-name">{{person.displayName}}</text>
+          <text wx:if="{{person.isSelf}}" class="tag tag-seal ps-self">我</text>
+        </view>
+        <view class="ps-tags">
+          <text wx:if="{{genText}}" class="tag tag-grey">{{genText}}</text>
+          <text class="tag {{livingCls}}">{{livingText}}</text>
+          <text wx:if="{{roleText}}" class="tag tag-gold">{{roleText}}</text>
+        </view>
+      </view>
+
+      <!-- 一句话生平。老谱里这一行往往就是全部信息 -->
+      <view wx:if="{{lifeText}}" class="ps-life">{{lifeText}}</view>
+
+      <!-- 字段列表 -->
+      <view class="ps-fields">
+        <view wx:for="{{fields}}" wx:key="label" class="ps-field">
+          <text class="ps-flabel">{{item.label}}</text>
+          <text class="ps-fvalue">{{item.value}}</text>
+        </view>
+      </view>
+
+      <!-- 亲属快捷入口 -->
+      <view wx:if="{{relativeChips.length}}" class="ps-chips">
+        <view
+          wx:for="{{relativeChips}}"
+          wx:key="key"
+          class="ps-chip"
+          catchtap="onChipTap"
+          data-id="{{item.id}}"
+        >
+          <text class="ps-chip-rel">{{item.rel}}</text>
+          <text class="ps-chip-name">{{item.name}}</text>
+        </view>
+      </view>
+
+      <!-- 待补全提醒：用「前后对比」而不是「请完善信息」 -->
+      <view wx:if="{{person.pending && person.pending.missingCount > 0}}" class="ps-pending">
+        <text class="ps-pending-ico">·</text>
+        <text>这一条还缺 {{person.pending.missingCount}} 项，补上后他就不只是谱上的一个名字了</text>
+      </view>
+    </view>
+
+    <!-- 动作区 -->
+    <view class="ps-actions safe-bottom">
+      <view class="btn btn-plain grow" catchtap="onDetail">看详情</view>
+
+      <view
+        wx:if="{{person.myPermissions.canEdit}}"
+        class="btn btn-primary grow"
+        catchtap="onEdit"
+      >补充信息</view>
+
+      <view
+        wx:elif="{{person.myPermissions.canClaim}}"
+        class="btn btn-primary grow"
+        catchtap="onClaim"
+      >这是我</view>
+
+      <view wx:elif="{{person.myPermissions.alreadyClaimedByMe}}" class="btn btn-primary grow" catchtap="onFillMine">我的待补全</view>
+    </view>
+  </block>
+
+  <view wx:else class="ps-body">
+    <view class="empty">
+      <view class="empty-mark">谱</view>
+      <view>这个位置还没有记录</view>
+    </view>
+  </view>
+</view>

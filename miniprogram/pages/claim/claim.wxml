@@ -1,0 +1,212 @@
+<!--
+  认领自己 —— 答题自证。
+
+  这一页不再让用户在树上"找自己"（认领前他看到的是「陈*明」，找不到），
+  而是直接问两个名字，系统反查。答对即进入，不需要等谁批。
+
+  四个状态：quiz 答题 / ambiguous 要补填 / nomatch 对不上 / done 完成
+-->
+<view class="page">
+
+  <!-- ============ 加载 ============ -->
+  <view wx:if="{{loading}}" class="loading">
+    <view class="skeleton sk-h"></view>
+    <view class="skeleton sk-l"></view>
+    <view class="skeleton sk-l sk-short"></view>
+  </view>
+
+  <!-- ============ 答题 ============ -->
+  <block wx:elif="{{stage === 'quiz' || stage === 'ambiguous'}}">
+
+    <view class="hero">
+      <view class="hero-family">{{familyName}}</view>
+      <view class="hero-q">您是谁家的？</view>
+      <view class="hero-sub">
+        填两个名字就行。答对了直接进去，不用等谁批。
+      </view>
+      <view wx:if="{{familyMeta}}" class="hero-meta">{{familyMeta}}</view>
+    </view>
+
+    <!-- 补填提示：同名多人，或证据太弱 -->
+    <view wx:if="{{stage === 'ambiguous'}}" class="note note-warn">
+      <view class="note-t">{{result.msg}}</view>
+      <view wx:if="{{extraNote}}" class="note-s">{{extraNote}}</view>
+    </view>
+
+    <!-- 第一步：您和谁最亲 -->
+    <view class="card">
+      <view class="card-title">您和家谱里的哪一位最亲？</view>
+      <view class="chips">
+        <view
+          wx:for="{{relations}}"
+          wx:key="value"
+          class="chip {{relation === item.value ? 'chip-on' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="onPickRelation"
+        >{{item.label}}</view>
+      </view>
+      <view wx:if="{{relationHint}}" class="t-xs t-sub mt-14">{{relationHint}}</view>
+    </view>
+
+    <!-- 第二步：两个名字 -->
+    <view class="card">
+      <view class="field">
+        <view class="field-label">{{askLabel}}</view>
+        <input
+          class="field-input"
+          value="{{relativeName}}"
+          focus="{{formFocusIdx === 0}}"
+          placeholder="按家谱上的写法填"
+          placeholder-class="ph"
+          confirm-type="next"
+          data-focus-index="0"
+          bindfocus="onFormFocus"
+          data-key="relativeName"
+          bindinput="onInput"
+        />
+      </view>
+
+      <view class="field">
+        <view class="field-label">您自己的名字</view>
+        <input
+          class="field-input"
+          value="{{selfName}}"
+          focus="{{formFocusIdx === 1}}"
+          placeholder="您的姓名"
+          placeholder-class="ph"
+          confirm-type="done"
+          data-focus-index="1"
+          bindfocus="onFormFocus"
+          data-key="selfName"
+          bindinput="onInput"
+        />
+      </view>
+
+      <view class="field-tip">
+        繁体、简体都可以，系统会自动对上。名字里的间隔号也不影响。
+      </view>
+    </view>
+
+    <!-- 第三步：选填，帮我们确认是哪一支 -->
+    <view class="card">
+      <view class="extra-head" bindtap="onToggleExtra">
+        <view class="card-title no-mb">另一位家长的名字</view>
+        <view class="extra-toggle">{{extraOpen ? '收起' : '选填 ›'}}</view>
+      </view>
+
+      <block wx:if="{{extraOpen}}">
+        <input
+          class="field-input mt-16"
+          value="{{extraName}}"
+          focus="{{formFocusIdx === 2}}"
+          placeholder="比如母亲的名字"
+          placeholder-class="ph"
+          data-focus-index="2"
+          bindfocus="onFormFocus"
+          data-key="extraName"
+          bindinput="onInput"
+        />
+        <view class="field-tip">
+          同名较多时，多填一位能帮我们确认是哪一支。
+          如果谱上这位长辈只记了姓（「配某氏」），把您知道的名字写上——
+          系统会顺手把它补进家谱。
+        </view>
+      </block>
+    </view>
+
+    <view class="ft-gap"></view>
+
+    <view class="ft safe-bottom">
+      <view class="btn btn-plain" bindtap="onGoHome">先看看</view>
+      <view
+        class="btn btn-primary grow {{!canSubmit || submitting ? 'btn-disabled' : ''}}"
+        bindtap="onSubmit"
+      >{{submitting ? '正在核对…' : '确认'}}</view>
+    </view>
+  </block>
+
+  <!-- ============ 对不上 ============ -->
+  <block wx:elif="{{stage === 'nomatch'}}">
+    <view class="done">
+      <view class="done-mark done-mark-warn">?</view>
+      <view class="done-title">{{result.msg}}</view>
+      <view wx:if="{{result.hint}}" class="done-sub">{{result.hint}}</view>
+    </view>
+
+    <view class="card safe">
+      <view class="card-title">还可能是因为</view>
+      <view class="safe-item">· 名字按家谱上的写法再对一遍，尤其是同音字</view>
+      <view class="safe-item">· 谱上可能记的是他的字或号，不是身份证上的名字</view>
+      <view class="safe-item">· 试试换一位亲属（母亲、配偶）</view>
+      <view class="safe-item">· 实在对不上，就请房长把您加进去——他那边有直接添加的入口</view>
+    </view>
+
+    <view class="ft-gap"></view>
+
+    <view class="ft safe-bottom">
+      <view class="btn btn-plain" bindtap="onGoHome">先看看</view>
+      <view class="btn btn-primary grow" bindtap="onRetry">再试一次</view>
+    </view>
+  </block>
+
+  <!-- ============ 完成 ============ -->
+  <block wx:elif="{{stage === 'done'}}">
+    <view class="done">
+      <view class="done-mark">✓</view>
+      <view class="done-title">{{result.title}}</view>
+      <view class="done-name">
+        {{result.name}}
+        <text wx:if="{{result.generationLabel}}" class="done-gen">{{result.generationLabel}}</text>
+      </view>
+      <view class="done-sub">{{result.sub}}</view>
+
+      <!-- 顺手把一个被历史省略的人写回来：这是产品最强的情绪点 -->
+      <view wx:if="{{result.filled.length}}" class="filled">
+        <view wx:for="{{result.filled}}" wx:key="personId" class="filled-row">
+          <text class="filled-before">{{item.before}}</text>
+          <text class="filled-arrow">→</text>
+          <text class="filled-after">{{item.after}}</text>
+        </view>
+        <view class="filled-tip">顺便把谱上缺的这一处补上了</view>
+      </view>
+
+      <view wx:if="{{result.grantedNodeCount}}" class="granted">
+        已开放 {{result.grantedNodeCount}} 个节点的填写权限
+      </view>
+    </view>
+
+    <view class="card safe">
+      <view class="card-title">接下来</view>
+      <view class="safe-item">· 您自己这一支的信息，填完立刻生效，不用等审核</view>
+      <view class="safe-item">· 超出您这一支的改动会进入房长的待办，但不会挡住您</view>
+      <view class="safe-item">· 填错了随时能改，每次改动都留有记录</view>
+    </view>
+
+    <view class="ft-gap"></view>
+
+    <view class="ft safe-bottom">
+      <view class="btn btn-plain" bindtap="onGoHome">回族谱</view>
+      <view class="btn btn-primary grow" bindtap="onGoFill">去补全我的信息</view>
+    </view>
+  </block>
+
+  <!-- ============ 已确认过 ============ -->
+  <block wx:else>
+    <view class="done">
+      <view class="done-mark">✓</view>
+      <view class="done-title">您已经确认过身份了</view>
+      <view class="done-name">
+        {{result.personName}}
+        <text wx:if="{{result.generationLabel}}" class="done-gen">{{result.generationLabel}}</text>
+      </view>
+      <view class="done-sub">可以直接去补全您和直系亲属的信息。</view>
+    </view>
+
+    <view class="ft-gap"></view>
+
+    <view class="ft safe-bottom">
+      <view class="btn btn-plain" bindtap="onGoHome">回族谱</view>
+      <view class="btn btn-primary grow" bindtap="onGoFill">去补全</view>
+    </view>
+  </block>
+</view>

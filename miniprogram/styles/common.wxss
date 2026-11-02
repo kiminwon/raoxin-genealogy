@@ -1,0 +1,241 @@
+/* ============================================================
+   饶信谱脉 · 全局设计变量与通用类（方案 C · 黛青谱衣）
+
+   视觉基调是「祠堂黛绿牌匾 + 烫金 + 宣纸内页 + 朱砂印章」：
+     纸  宣纸米黄 #F6F3EA —— 全局底色，正文永远落在这张"纸"上。
+     黛  黛青墨绿 #2B574B —— 祠堂牌匾的墨绿。**主色**：按钮、当前态、
+         谱系连线、家族卡卡头（卡头做成牌匾：烫金描边 + 金字）。
+     金  烫金 #C9A961 —— 只用于牌匾描边与金字，不落正文。
+     印  朱砂 #A6321E —— 只做「盖章」级强调，用量必须稀少：
+         身份徽标、已认领标记、危险动作。铺面就俗了，点睛才贵。
+
+   演变记录：
+   2026-10-26 方案 B：朱红→靛青 #23406B（线装书封皮）。
+   2026-10-28 方案 C（启明拍板，同事 AI 建议催化）：靛青→黛青墨绿 #2B574B
+   （祠堂牌匾意象），卡头升级为「牌匾」（烫金描边 + 金字 + 拉开字距），
+   全局字体加衬线栈（宋体书卷气）。朱砂继续只做印。
+   ============================================================ */
+
+page {
+  /* ---- 纸 ---- */
+  --paper: #F6F3EA;
+  --paper-2: #EDE8DB;
+  --card: #FFFFFF;
+
+  /* ---- 墨 ---- */
+  --ink: #1F2226;
+  --ink-2: #4E5459;
+  --ink-3: #85817A;
+
+  /* ---- 线 ---- */
+  --line: #E3DDCE;
+  --line-2: #D4CCB8;
+
+  /* ---- 黛青：主色（动作、当前态、谱系连线）---- */
+  --dai: #2B574B;
+  --dai-2: #447A6C;      /* 浅一档：hover / 次级强调 */
+  --dai-3: #8FB0A5;      /* 极浅：连线、非强调描边 */
+  --dai-bg: #E6EEE9;     /* 黛青浅底 */
+
+  /* ---- 朱印：只做点睛，不再承担主色 ---- */
+  --seal: #A6321E;
+  --seal-soft: #C25B45;
+  --seal-bg: #F7E9E5;
+
+  /* ---- 状态色 ---- */
+  --jade: #3F6B57;          /* 已故 / 完成态 */
+  --gold: #B8860B;          /* 婚线、房长标识 */
+  --warn: #B0741C;
+
+  background: var(--paper);
+  color: var(--ink);
+  /* 衬线栈：iOS 出宋体（STSong），Android 回退思源宋体/serif。
+     书卷气主要给标题和姓名——如果某些小字号正文发虚，
+     允许在具体类里覆盖回 PingFang。 */
+  font-family: "STSong", "Source Han Serif CN", "Noto Serif CJK SC", "SimSun",
+    -apple-system, "PingFang SC", serif;
+  font-size: 30rpx;
+  line-height: 1.6;
+}
+
+/* ---------- 布局 ---------- */
+
+.row { display: flex; flex-direction: row; align-items: center; }
+.row-between { display: flex; flex-direction: row; align-items: center; justify-content: space-between; }
+.col { display: flex; flex-direction: column; }
+.center { display: flex; align-items: center; justify-content: center; }
+.grow { flex: 1; min-width: 0; }
+
+/* ---------- 卡片 ----------
+   层次靠「纸底加深 + 双层柔和阴影」建立，边框反而要退淡——
+   边框和阴影同时重，卡片会像被框住的表格。 */
+
+.card {
+  background: var(--card);
+  border-radius: 20rpx;
+  padding: 32rpx;
+  margin: 24rpx 28rpx;
+  border: 1rpx solid rgba(31, 34, 38, 0.06);
+  box-shadow:
+    0 2rpx 6rpx rgba(31, 34, 38, 0.04),
+    0 12rpx 28rpx rgba(31, 34, 38, 0.06);
+}
+
+.card-flat {
+  background: var(--card);
+  border-radius: 20rpx;
+  padding: 32rpx;
+  border: 1rpx solid var(--line);
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+}
+
+/* 标题前的一小竖黛青，替代粗体大字，安静的强调 */
+.card-title::before {
+  content: '';
+  display: inline-block;
+  width: 6rpx;
+  height: 30rpx;
+  background: var(--dai);
+  border-radius: 3rpx;
+  margin-right: 16rpx;
+}
+
+/* ---------- 按钮 ---------- */
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96rpx;
+  border-radius: 16rpx;
+  font-size: 34rpx;
+  font-weight: 500;
+  border: none;
+  line-height: 1;
+}
+
+.btn::after { border: none; }
+
+.btn-primary {
+  background: var(--dai);
+  color: #FFF;
+  box-shadow: 0 6rpx 16rpx rgba(43, 87, 75, 0.22);
+}
+
+.btn-primary.btn-disabled {
+  background: var(--line-2);
+  color: var(--ink-3);
+  box-shadow: none;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--dai);
+  border: 2rpx solid var(--dai);
+}
+
+.btn-plain {
+  background: var(--paper-2);
+  color: var(--ink);
+  border: 1rpx solid var(--line);
+}
+
+/* 危险动作（退出、删除）才用朱红 */
+.btn-danger {
+  background: transparent;
+  color: var(--seal);
+  border: 2rpx solid var(--seal-soft);
+}
+
+.btn-sm {
+  height: 68rpx;
+  font-size: 28rpx;
+  padding: 0 28rpx;
+  border-radius: 12rpx;
+}
+
+/* ---------- 标签 ---------- */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 40rpx;
+  padding: 0 14rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+  line-height: 1;
+}
+
+.tag-dai { background: var(--dai-bg); color: var(--dai); }
+.tag-seal { background: var(--seal-bg); color: var(--seal); }
+.tag-jade { background: #E7EFEA; color: var(--jade); }
+.tag-gold { background: #F7F0DC; color: var(--warn); }
+.tag-grey { background: var(--paper-2); color: var(--ink-3); }
+
+/* ---------- 分隔 ---------- */
+
+.hr {
+  height: 1rpx;
+  background: var(--line);
+  margin: 24rpx 0;
+}
+
+/* ---------- 文本 ---------- */
+
+.t-title { font-size: 38rpx; font-weight: 600; }
+.t-sub { font-size: 26rpx; color: var(--ink-3); }
+.t-ink2 { color: var(--ink-2); }
+.t-sm { font-size: 26rpx; }
+.t-xs { font-size: 24rpx; }
+.t-seal { color: var(--seal); }
+.t-dai { color: var(--dai); }
+.t-bold { font-weight: 600; }
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- 空状态 ---------- */
+
+.empty {
+  padding: 120rpx 60rpx;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 28rpx;
+}
+
+.empty-mark {
+  font-size: 80rpx;
+  color: var(--line-2);
+  margin-bottom: 20rpx;
+}
+
+/* ---------- 骨架屏 ---------- */
+
+.skeleton {
+  background: linear-gradient(90deg, #EAE4D6 25%, #F3EFE4 37%, #EAE4D6 63%);
+  background-size: 400% 100%;
+  animation: sk 1.4s ease infinite;
+  border-radius: 12rpx;
+}
+
+@keyframes sk {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+/* ---------- 底部安全区 ---------- */
+
+.safe-bottom {
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+}

@@ -1,0 +1,506 @@
+/* 我的
+   ------------------------------------------------------------
+   这一页的信息密度刻意压得比首页低：用户来这里只想知道三件事
+   —— 我是谁、我在哪些族、我手里的码是什么。
+   所以三个区块之间留白很大，用「书脊」而不是列表来做族切换，
+   让它看起来像书架而不是设置项。
+*/
+
+.page {
+  min-height: 100vh;
+  padding: 28rpx 28rpx 80rpx;
+  box-sizing: border-box;
+}
+
+.skeleton-wrap { padding-top: 8rpx; }
+
+.sk-block {
+  height: 160rpx;
+  border-radius: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+/* ---------- 身份卡 ---------- */
+
+.id-card {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 30rpx 28rpx;
+  background: var(--card);
+  border: 1rpx solid var(--line);
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(20, 26, 36, 0.04);
+}
+
+.id-avatar {
+  flex-shrink: 0;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: var(--dai-bg);
+  color: var(--dai);
+  font-size: 42rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 一枚浅浅的印章感，不用图片头像——多数长辈不上传照片 */
+  border: 2rpx solid rgba(43, 87, 75, 0.2);
+}
+
+.id-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.id-name {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.id-sub {
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: var(--ink-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 分享按钮：button 元素默认带一堆样式，必须重置干净 */
+.id-share {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0 24rpx;
+  height: 56rpx;
+  line-height: 54rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  color: var(--dai);
+  background: transparent;
+  border: 1rpx solid var(--dai);
+  border-radius: 999rpx;
+}
+
+.id-share::after { border: none; }
+
+/* ---------- 认领状态 ---------- */
+
+.claim-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 18rpx;
+  padding: 0 28rpx;
+  height: 96rpx;
+  border-radius: 20rpx;
+  border: 1rpx solid var(--line);
+  background: var(--card);
+}
+
+.claim-row.claim-on {
+  border-color: rgba(63, 107, 87, 0.28);
+  background: #F3F7F4;
+}
+
+.claim-row.claim-off {
+  border-color: rgba(43, 87, 75, 0.22);
+  background: var(--dai-bg);
+}
+
+.claim-label {
+  flex-shrink: 0;
+  font-size: 25rpx;
+  color: var(--jade);
+}
+
+.claim-label-off { color: var(--dai); }
+
+.claim-value {
+  flex: 1;
+  min-width: 0;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.claim-arrow {
+  flex-shrink: 0;
+  font-size: 34rpx;
+  color: var(--ink-3);
+  line-height: 1;
+}
+
+.claim-cta {
+  flex: 1;
+  text-align: right;
+  font-size: 27rpx;
+  font-weight: 600;
+  color: var(--dai);
+}
+
+/* ---------- 区块标题 ---------- */
+
+.sec-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 44rpx 8rpx 18rpx;
+}
+
+.sec-title {
+  font-size: 27rpx;
+  color: var(--ink-3);
+  letter-spacing: 2rpx;
+}
+
+.sec-count {
+  font-size: 23rpx;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 书架 ---------- */
+
+.shelf { display: block; }
+
+.book {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin-bottom: 14rpx;
+  background: var(--card);
+  border: 1rpx solid var(--line);
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.book.book-on {
+  border-color: rgba(43, 87, 75, 0.3);
+  background: #FCFDFF;
+}
+
+/* 书脊：姓氏竖着一格黛青，像线装书脊上的书名 */
+.book-spine {
+  flex-shrink: 0;
+  width: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--line);
+  color: var(--ink-2);
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.book.book-on .book-spine {
+  background: var(--dai);
+  color: #FFF;
+}
+
+.book-main {
+  flex: 1;
+  min-width: 0;
+  padding: 22rpx 24rpx;
+}
+
+.book-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.book-meta {
+  margin-top: 4rpx;
+  font-size: 23rpx;
+  color: var(--ink-3);
+}
+
+.book-badge {
+  flex-shrink: 0;
+  align-self: center;
+  margin-right: 24rpx;
+  padding: 0 14rpx;
+  height: 36rpx;
+  line-height: 36rpx;
+  border-radius: 8rpx;
+  background: var(--dai-bg);
+  color: var(--dai);
+  font-size: 21rpx;
+}
+
+.empty-mini {
+  padding: 40rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--ink-3);
+}
+
+.add-family {
+  margin-top: 6rpx;
+  padding: 26rpx 0;
+  text-align: center;
+  font-size: 27rpx;
+  color: var(--ink-2);
+  background: var(--paper-2);
+  border: 1rpx dashed var(--line-2);
+  border-radius: 16rpx;
+}
+
+/* ---------- 理事会入口 ----------
+   全站唯一的深色面（和家族卡牌匾同一套语言）：
+   它不是普通功能入口，是"你现在代表族里做判断"，视觉上要压得住。 */
+
+.admin-entry {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  margin-top: 6rpx;
+  padding: 26rpx;
+  background: var(--dai);
+  border-radius: 18rpx;
+  box-shadow:
+    inset 0 0 0 1rpx rgba(201, 169, 97, 0.55),
+    inset 0 0 0 5rpx var(--dai),
+    inset 0 0 0 6rpx rgba(201, 169, 97, 0.3);
+}
+
+.admin-entry-hover { opacity: 0.92; }
+
+.admin-mark {
+  width: 64rpx;
+  height: 64rpx;
+  flex-shrink: 0;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34rpx;
+  color: #E9D7A6;
+  border: 1rpx solid rgba(201, 169, 97, 0.6);
+}
+
+.admin-main { flex: 1; min-width: 0; }
+
+.admin-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  color: #E9D7A6;
+}
+
+.admin-sub {
+  margin-top: 6rpx;
+  font-size: 23rpx;
+  color: rgba(233, 215, 166, 0.72);
+}
+
+.admin-arrow {
+  font-size: 40rpx;
+  line-height: 1;
+  color: rgba(233, 215, 166, 0.6);
+}
+
+/* ---------- 邀请家人进谱 ---------- */
+
+.inv-hint {
+  padding: 26rpx 28rpx;
+  background: var(--paper-2);
+  border-radius: 16rpx;
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: var(--ink-2);
+}
+
+.inv-share {
+  padding: 28rpx;
+  background: var(--card);
+  border: 1rpx solid var(--line);
+  border-radius: 16rpx;
+}
+
+.inv-share-txt {
+  font-size: 25rpx;
+  line-height: 1.75;
+  color: var(--ink-2);
+}
+
+.inv-share-name {
+  font-weight: 600;
+  color: var(--dai);
+}
+
+.inv-share-btn {
+  margin-top: 24rpx;
+  height: 84rpx;
+}
+
+.inv-share-btn::after { border: none; }
+
+.inv-share-tip {
+  margin-top: 16rpx;
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: var(--ink-3);
+}
+
+.gen-btn {
+  margin-top: 20rpx;
+  height: 84rpx;
+}
+
+.tip {
+  margin-top: 18rpx;
+  padding: 0 8rpx;
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: var(--ink-3);
+}
+
+/* ---------- 页脚 ---------- */
+
+.foot {
+  margin-top: 60rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  text-align: center;
+  font-size: 21rpx;
+  color: var(--line-2);
+  letter-spacing: 2rpx;
+}
+
+/* ---------- 我这一格（原「待办」tab，2026-11-02 并入本页） ----------
+   和身份卡同一套纸片语言，但多一条进度：这片区域的唯一目的是
+   "让你看见还差多少、并且现在就能补一条"。 */
+
+.mtodo {
+  margin-top: 20rpx;
+  padding: 26rpx 28rpx 18rpx;
+  background: var(--card);
+  border: 1rpx solid var(--line);
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(20, 26, 36, 0.04);
+}
+
+.mtodo-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.mtodo-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--ink-2);
+  letter-spacing: 2rpx;
+}
+
+.mtodo-pct {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--dai);
+}
+
+.mtodo-bar {
+  margin-top: 14rpx;
+  height: 10rpx;
+  border-radius: 999rpx;
+  background: var(--dai-bg);
+  overflow: hidden;
+}
+
+.mtodo-fill {
+  height: 100%;
+  border-radius: 999rpx;
+  background: #2B574B;
+  transition: width 0.3s ease;
+}
+
+.mtodo-sub {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--ink-3);
+}
+
+.mtodo-done {
+  color: var(--dai);
+}
+
+.mtodo-list {
+  margin-top: 10rpx;
+  border-top: 1rpx solid var(--line);
+}
+
+.mtodo-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 18rpx 0;
+  border-bottom: 1rpx solid var(--line);
+}
+
+.mtodo-item-hover {
+  opacity: 0.7;
+}
+
+.mtodo-q {
+  flex: 1;
+  min-width: 0;
+  font-size: 27rpx;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.mtodo-go {
+  flex-shrink: 0;
+  font-size: 24rpx;
+  color: var(--dai);
+}
+
+.mtodo-all {
+  margin-top: 14rpx;
+  padding: 10rpx 0 6rpx;
+  text-align: center;
+  font-size: 25rpx;
+  color: var(--dai);
+  letter-spacing: 1rpx;
+}
+
+.mtodo-all-hover {
+  opacity: 0.7;
+}
+
+/* 没认领时这张卡换成"去确认"，别留一个空进度条 */
+.mtodo-claim {
+  padding: 4rpx 0 2rpx;
+}
+
+.mtodo-claim-t {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.mtodo-claim-s {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: var(--ink-3);
+}
+
+.mtodo-claim-go {
+  display: inline-block;
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  color: var(--dai);
+}

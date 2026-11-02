@@ -1,0 +1,869 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--paper);
+  overflow: hidden;
+}
+
+/* ============ 顶部 ============ */
+
+.hd {
+  flex-shrink: 0;
+  background: var(--paper);
+  border-bottom: 1rpx solid var(--line);
+}
+
+/* ---------- 家族卡 ----------
+   这一块回答的是"这是哪个族、多大、录得全不全、我是谁"。
+   做成「黛青卡头 + 白底功能区」两层：卡头承担视觉落脚点，
+   功能区放搜索和谱文。原来是一整片米白，整屏没有一个深色处，
+   用户第一眼不知道该看哪儿。 */
+
+.fam {
+  margin: 12rpx 20rpx 0;
+  border-radius: 22rpx;
+  overflow: hidden;
+  background: var(--card);
+  border: 1rpx solid rgba(31, 34, 38, 0.07);
+  box-shadow:
+    0 2rpx 6rpx rgba(31, 34, 38, 0.04),
+    0 10rpx 26rpx rgba(31, 34, 38, 0.07);
+}
+
+/* 黛青卡头 = 一块「宗祠牌匾」：墨绿匾底 + 烫金双线描边 + 金字族名。
+   双线用 inset box-shadow 画：金1rpx → 黛6rpx → 金1rpx，
+   比嵌套 view 省两层节点。整屏唯一的深色面。
+   2026-10-28 整体压扁：牌匾下面是主角（卡片流），顶栏只留"落脚点"的作用，
+   之前牌匾+搜索+谱文+大按钮占掉半屏，卡片流只剩一条缝。 */
+.fam-hero {
+  padding: 16rpx 26rpx 14rpx;
+  background: var(--dai);
+  border-radius: 21rpx 21rpx 0 0;
+  box-shadow:
+    inset 0 0 0 1rpx rgba(201, 169, 97, 0.6),
+    inset 0 0 0 7rpx var(--dai),
+    inset 0 0 0 8rpx rgba(201, 169, 97, 0.32);
+}
+
+.fam-body {
+  padding: 10rpx 22rpx 6rpx;
+}
+
+.fam-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+}
+
+.fam-head-hover { opacity: 0.65; }
+
+.fam-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  min-width: 0;
+}
+
+.fam-name {
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #E9D7A6;          /* 烫金字 */
+  line-height: 1.3;
+  letter-spacing: 3rpx;    /* 牌匾字距，长辈一眼扫到族名 */
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.35);
+}
+
+/* 身份用朱印底：黛青是"动作"，朱红是"盖章"——身份是盖上去的，不是点出来的 */
+.fam-role {
+  flex-shrink: 0;
+  height: 34rpx;
+  line-height: 34rpx;
+  padding: 0 12rpx;
+  border-radius: 6rpx;
+  background: var(--seal);
+  color: #FFF;
+  font-size: 21rpx;
+}
+
+.fam-line {
+  margin-top: 2rpx;
+  font-size: 23rpx;
+  color: rgba(233, 215, 166, 0.78);
+}
+
+.fam-swap {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  height: 52rpx;
+  padding: 0 18rpx;
+  border-radius: 26rpx;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1rpx solid rgba(255, 255, 255, 0.26);
+  font-size: 24rpx;
+  color: #F7F4EA;
+}
+
+.fam-swap-ico {
+  font-size: 26rpx;
+  line-height: 1;
+}
+
+/* 一行三个数字，用细竖线隔开比用"·"更整齐 */
+.fam-stats {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin-top: 8rpx;
+}
+
+.fam-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 4rpx;
+}
+
+.fam-stat-grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.fam-v {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #F1E8CE;
+  /* 等宽数字：人数从 9 变 10 时不跳 */
+  font-variant-numeric: tabular-nums;
+}
+
+.fam-k {
+  font-size: 22rpx;
+  color: rgba(233, 215, 166, 0.72);
+}
+
+.fam-sep {
+  width: 1rpx;
+  height: 22rpx;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* 完整度条。用提亮青绿：这是"已经做完的事"，不是催办。
+   黛青底上必须提亮，直接用 --jade 会糊进背景里。 */
+.fam-bar {
+  flex: 1;
+  min-width: 40rpx;
+  height: 8rpx;
+  margin: 0 8rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.18);
+  overflow: hidden;
+}
+
+.fam-fill {
+  height: 100%;
+  border-radius: 999rpx;
+  background: #74C09C;
+}
+
+/* 搜索框：形状本身就是说明。原来写"搜人"的小按钮，
+   用户不知道点进去是弹对话框还是跳页面，索性不点。 */
+.fam-search {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  height: 60rpx;
+  padding: 0 22rpx;
+  border-radius: 30rpx;
+  background: var(--paper);
+  border: 1rpx solid var(--line);
+}
+
+.fam-search-hover { background: var(--paper-2); }
+
+.fam-search-ico {
+  font-size: 30rpx;
+  line-height: 1;
+  color: var(--ink-3);
+}
+
+.fam-search-ph {
+  flex: 1;
+  font-size: 25rpx;
+  color: var(--ink-3);
+}
+
+/* ---------- 两个大按钮（视图切换） ----------
+   原来是右上角两个小 tab，长辈看不见也看不懂。
+   2026-10-28 从上下两排压成**一行两个**：它们是视图切换，不是两条主线动作，
+   不值得各占一整行把卡片流挤没。主动作实底金字，全族大图描边款。 */
+
+.big-btns {
+  display: flex;
+  flex-direction: row;
+  gap: 14rpx;
+  padding: 12rpx 20rpx 12rpx;
+}
+
+.bb {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 84rpx;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  letter-spacing: 4rpx;
+  /* 未选中：浅底 + 淡黛青描边 + 黛青字。两个按钮默认长得一样，
+     谁是"当前视图"完全由 .bb-on 决定——不给任何一边预设主按钮样式。 */
+  background: rgba(43, 87, 75, 0.06);
+  color: var(--dai);
+  border: 2rpx solid rgba(43, 87, 75, 0.22);
+  transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.bb-hover { opacity: 0.82; }
+
+/* 选中：黛青实底 + 烫金字 + 内金线，和牌匾同一套语言。
+   ⚠️ 必须写在 .bb 之后（同一优先级，后写生效），否则底色被浅色盖回去。 */
+.bb-on {
+  background: var(--dai);
+  color: #E9D7A6;
+  border-color: var(--dai);
+  box-shadow:
+    inset 0 0 0 1rpx rgba(201, 169, 97, 0.5),
+    0 6rpx 16rpx rgba(43, 87, 75, 0.28);
+}
+
+.bb-note {
+  font-size: 20rpx;
+  letter-spacing: 1rpx;
+  color: var(--ink-3);
+  margin-left: 10rpx;
+}
+
+/* ============ 未认领提示 ============ */
+
+.notice {
+  flex-shrink: 0;
+  margin: 10rpx 28rpx 0;
+  padding: 14rpx 24rpx;
+  background: var(--dai-bg);
+  border-radius: 14rpx;
+  border-left: 6rpx solid var(--dai);
+}
+
+.notice-t {
+  font-size: 26rpx;
+  color: var(--dai);
+  line-height: 1.5;
+}
+
+/* ============ 流的舞台 ============ */
+
+.stage-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--paper-2);
+  /* 纸上的淡格子，给用户一点"这是在谱纸上"的空间感。
+     用 background-image + background-size 分开写，不写 position/size 简写——
+     小程序对 background 简写的支持不一致。 */
+  background-image: radial-gradient(circle, var(--line) 1rpx, transparent 1rpx);
+  background-size: 40rpx 40rpx;
+  background-position: 0 0;
+}
+
+.stage {
+  width: 100%;
+  height: 100%;
+}
+
+/* ============ 世系垂直卡片流 ============
+   左侧一根细墨线贯穿 + 每代一枚竖排徽章，代际纵深全靠这两样表达；
+   卡片纵向堆叠，单向上下滑，不再有任何拖拽/缩放。 */
+
+.stage {
+  width: 100%;
+  height: 100%;
+}
+
+.flow {
+  padding: 10rpx 24rpx 0;
+  box-sizing: border-box;
+  display: block;
+}
+
+.fgen {
+  position: relative;
+  padding-left: 76rpx;
+  padding-bottom: 8rpx;
+}
+
+.fgen-thread {
+  position: absolute;
+  left: 25rpx;
+  top: 0;
+  bottom: 0;
+  width: 1rpx;
+  background: rgba(43, 87, 75, 0.3);
+}
+
+.fgen-badge {
+  position: absolute;
+  left: 0;
+  top: 20rpx;
+  writing-mode: vertical-rl;
+  font-size: 21rpx;
+  letter-spacing: 4rpx;
+  color: var(--dai);
+  background: var(--dai-bg);
+  border: 1rpx solid rgba(43, 87, 75, 0.25);
+  border-radius: 6rpx;
+  padding: 12rpx 4rpx;
+  z-index: 2;
+}
+
+/* ---------- 人物卡 ---------- */
+
+.fcard {
+  margin: 0 0 18rpx;
+  background: var(--card);
+  border: 1rpx solid var(--line);
+  border-radius: 18rpx;
+  overflow: hidden;
+  box-shadow: 0 1rpx 3rpx rgba(31, 34, 38, 0.05);
+}
+
+/* 主线上的卡：左边一道黛青竖条，眼睛顺着它往下滑就是自己的血脉 */
+.fcard-path {
+  border-left: 6rpx solid var(--dai);
+}
+
+.fcard-main {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 22rpx 24rpx;
+}
+
+/* 墨水姓氏圆章：没有画像素材时的占位，也是一枚"名字印" */
+.favatar {
+  width: 84rpx;
+  height: 84rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--gold-t, #E9D7A6);
+  background: linear-gradient(160deg, #33413E, #1F2226);
+  border: 1rpx solid rgba(201, 169, 97, 0.4);
+}
+
+.favatar-deceased {
+  background: linear-gradient(160deg, #5C584E, #3B382F);
+  color: #D8D2C2;
+}
+
+.favatar-self {
+  border: 3rpx solid var(--dai);
+}
+
+.favatar-sm {
+  width: 60rpx;
+  height: 60rpx;
+  font-size: 26rpx;
+}
+
+.finfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.fname-row {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  flex-wrap: wrap;
+}
+
+.fname {
+  font-size: 38rpx;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 2rpx;
+}
+
+.ftag {
+  flex-shrink: 0;
+  font-size: 21rpx;
+  padding: 3rpx 10rpx;
+  border-radius: 6rpx;
+  line-height: 1.3;
+}
+
+.ftag-self { background: var(--dai); color: #F3EFE2; }
+.ftag-gu { background: var(--paper-2); color: var(--ink-3); }
+.ftag-pend { background: var(--seal-bg); color: var(--seal); }
+
+.fmeta {
+  margin-top: 4rpx;
+  font-size: 24rpx;
+  color: var(--ink-3);
+}
+
+.fchev {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  font-size: 30rpx;
+  color: var(--line-2);
+}
+
+/* 卡头「详」：一枚小方印，不是文字链接——长辈的手指按不准小字 */
+.fdetail {
+  padding: 4rpx 12rpx;
+  font-size: 24rpx;
+  color: var(--dai);
+  border: 1rpx solid rgba(43, 87, 75, 0.35);
+  border-radius: 6rpx;
+  line-height: 1.5;
+}
+
+.fchev-ar {
+  color: var(--line-2);
+}
+
+/* ---------- 配偶行：内嵌在本卡里，虚线分隔 ---------- */
+
+.fspouse {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx 24rpx;
+  border-top: 1rpx dashed var(--line-2);
+  background: #FBF9F3;
+}
+
+/* 离异：整行走虚线边框，标注里已有「已离异」——人仍然留在这家 */
+.fspouse-divorced {
+  margin: 0 12rpx;
+  border: 1rpx dashed var(--line-2);
+  border-radius: 12rpx;
+  background: transparent;
+}
+
+.fsp-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.fsp-tag {
+  font-size: 22rpx;
+  color: var(--ink-3);
+}
+
+/* 配偶行右边的 ›：告诉用户这行能点开（不是纯文字标签） */
+.fsp-arrow {
+  margin-left: auto;
+  font-size: 30rpx;
+  color: var(--line-2);
+}
+
+/* 按下有反馈，否则长辈不知道点没点中 */
+.fspouse-hover {
+  background: var(--dai-bg);
+}
+
+/* ---------- 内联展开区 ---------- */
+
+.fexpand {
+  border-top: 1rpx solid var(--line);
+  background: #FCFBF6;
+}
+
+.fsec {
+  padding: 18rpx 24rpx 4rpx;
+}
+
+.fsec-k {
+  font-size: 21rpx;
+  letter-spacing: 4rpx;
+  color: var(--ink-3);
+  margin-bottom: 12rpx;
+}
+
+.fkids {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  padding-bottom: 14rpx;
+}
+
+.fkid {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  background: var(--paper);
+  border: 1rpx solid var(--line);
+  border-radius: 12rpx;
+  padding: 10rpx 16rpx;
+}
+
+.fkid-hover { background: var(--dai-bg); }
+
+.fkid-ava {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: var(--dai-bg);
+  color: var(--dai);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+}
+
+.fkid-name {
+  font-size: 27rpx;
+  color: var(--ink);
+}
+
+/* 动作行：三个饱满大按钮，指尖高度 76rpx（≥48px 减一点屏宽余量） */
+.fact-row {
+  display: flex;
+  gap: 14rpx;
+  padding: 6rpx 24rpx 22rpx;
+}
+
+.fact {
+  flex: 1;
+  height: 76rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12rpx;
+  font-size: 27rpx;
+  letter-spacing: 2rpx;
+}
+
+.fact-hover { opacity: 0.8; }
+
+.fact-main {
+  background: var(--dai);
+  color: var(--gold-t, #E9D7A6);
+}
+
+.fact-ghost {
+  background: transparent;
+  color: var(--dai);
+  border: 1rpx solid var(--dai-2);
+}
+
+/* ---------- 流的首尾：还有更早/更晚的世代 ---------- */
+
+.flow-more {
+  margin: 6rpx 0 20rpx;
+  padding: 22rpx 24rpx;
+  text-align: center;
+  font-size: 27rpx;
+  color: var(--dai);
+  background: var(--dai-bg);
+  border: 1rpx dashed rgba(43, 87, 75, 0.35);
+  border-radius: 14rpx;
+}
+
+.flow-more-down { margin: 4rpx 0 10rpx; }
+
+.flow-more-hover { opacity: 0.75; }
+
+/* ---------- 加载态 ---------- */
+
+.stage-loading {
+  padding: 60rpx 40rpx;
+}
+
+.sk-node {
+  height: 88rpx;
+  margin-bottom: 24rpx;
+}
+
+.sk-node:nth-child(2) { width: 70%; }
+.sk-node:nth-child(3) { width: 85%; }
+.sk-node:nth-child(4) { width: 60%; }
+.sk-node:nth-child(5) { width: 78%; }
+.sk-node:nth-child(6) { width: 50%; }
+
+.stage-loading-tip {
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 26rpx;
+  margin-top: 20rpx;
+}
+
+.empty-hint {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--ink-3);
+}
+
+.empty-btn {
+  margin: 32rpx auto 0;
+  width: 240rpx;
+}
+
+/* ============ 底部条 ============ */
+
+.ft {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22rpx 36rpx;
+  padding-bottom: calc(22rpx + env(safe-area-inset-bottom));
+  background: var(--dai);
+  color: #FFF;
+  box-shadow: 0 -4rpx 20rpx rgba(43, 87, 75, 0.18);
+}
+
+.ft-done {
+  background: var(--card);
+  border-top: 1rpx solid var(--line);
+}
+
+.ft-done .ft-title { color: var(--jade); }
+.ft-done .ft-sub { color: var(--ink-3); }
+.ft-done .ft-go { display: none; }
+
+.ft-title {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.ft-sub {
+  font-size: 24rpx;
+  opacity: 0.85;
+  margin-top: 2rpx;
+}
+
+.ft-go {
+  font-size: 28rpx;
+  flex-shrink: 0;
+  padding-left: 20rpx;
+}
+
+/* 全族总览的 Canvas 宿主：撑满舞台。
+   组件自己的 :host 只能做 display/尺寸声明，在 flex 容器里还是得由
+   使用方给 flex:1，否则高度是 0、canvas 什么都画不出来。 */
+tree-canvas {
+  flex: 1;
+  display: block;
+  min-height: 0;
+}
+
+/* 全族总览右上角的规模汇总：15 代 · 200 丁口 */
+/* ============ 全族大宏图：Canvas 谱牌树（2026-10-29 定稿） ============
+   1:1 不缩放，上下左右滑动；节点 88×96、名字 22px 永远可读，
+   左侧一列「世代丁口」由 canvas 自己画（屏幕坐标，滑不掉）。
+   页面这层只负责把它撑满：组件宿主默认是 inline，高 0 会静默白屏。 */
+
+.ov-wrap {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.ov-wrap tree-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================================
+   点人操作环
+   ============================================================
+   这里的单位**全是 px，不是 rpx**：坐标是节点画布坐标 × scale 得来的，
+   换成 rpx 会在大屏上整体偏移。按钮 52px 略大于 44px 的拇指下限，
+   因为环上六个按钮挨得近，留一点容错。
+*/
+
+.ring-mask {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  /* 只压一点点暗：目的是"接住点击"，不是把树藏起来 */
+  background: rgba(20, 26, 36, 0.08);
+}
+
+.ring-btn {
+  position: absolute;
+  z-index: 31;
+  width: 52px;
+  height: 52px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1;
+  background: #FFF;
+  color: var(--ink);
+  border: 1px solid var(--line-2);
+  box-shadow: 0 3px 10px rgba(31, 34, 38, 0.15);
+}
+
+/* 往上：父母。黛青——这是修谱的主线动作 */
+.ring-up {
+  color: var(--dai);
+  border-color: rgba(43, 87, 75, 0.42);
+  background: #F3F6FA;
+}
+
+/* 往下：子女。青绿，表示"往后延续" */
+.ring-down {
+  color: var(--jade);
+  border-color: rgba(63, 107, 87, 0.38);
+  background: #F6FAF8;
+}
+
+/* 往左：配偶。金——婚礼在谱上本来就是金线 */
+.ring-side {
+  color: var(--warn);
+  border-color: rgba(184, 134, 11, 0.4);
+  background: #FFFCF2;
+}
+
+/* 往右：详情。做成墨色，语义是"看"而不是"改" */
+.ring-detail {
+  color: #FFF;
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+/* 已有父亲/母亲时置灰：不是禁用，是"这件事已经做过了" */
+.ring-btn-off {
+  color: var(--ink-3);
+  background: rgba(244, 239, 230, 0.96);
+  border-style: dashed;
+  border-color: var(--line-2);
+  box-shadow: none;
+}
+
+/* ============================================================
+   找人（全屏搜索层）
+   ============================================================ */
+
+.s-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  background: rgba(20, 26, 36, 0.3);
+}
+
+.s-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 61;
+  display: flex;
+  flex-direction: column;
+  max-height: 78vh;
+  background: var(--paper);
+  border-bottom-left-radius: 20rpx;
+  border-bottom-right-radius: 20rpx;
+  box-shadow: 0 10rpx 32rpx rgba(20, 26, 36, 0.22);
+  padding-bottom: 12rpx;
+}
+
+.s-bar {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  padding: 22rpx 24rpx 14rpx;
+}
+
+.s-ico {
+  flex-shrink: 0;
+  font-size: 34rpx;
+  line-height: 1;
+  color: var(--ink-3);
+}
+
+.s-input {
+  flex: 1;
+  min-width: 0;
+  height: 72rpx;
+  padding: 0 22rpx;
+  box-sizing: border-box;
+  background: var(--card);
+  border: 1rpx solid var(--line);
+  border-radius: 36rpx;
+  font-size: 28rpx;
+  color: var(--ink);
+}
+
+.s-ph { color: var(--ink-3); }
+
+.s-cancel {
+  flex-shrink: 0;
+  padding: 10rpx 4rpx;
+  font-size: 27rpx;
+  color: var(--ink-2);
+}
+
+.s-list {
+  flex: 1;
+  min-height: 0;
+  max-height: 64vh;
+}
+
+.s-hit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  padding: 24rpx 30rpx;
+  border-top: 1rpx solid var(--line);
+}
+
+.s-hit-hover { background: var(--paper-2); }
+
+.s-hit-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 30rpx;
+  color: var(--ink);
+}
+
+.s-hit-gen {
+  flex-shrink: 0;
+  font-size: 23rpx;
+  color: var(--ink-3);
+}
+
+.s-empty {
+  padding: 56rpx 44rpx;
+  text-align: center;
+  font-size: 25rpx;
+  line-height: 1.7;
+  color: var(--ink-3);
+}

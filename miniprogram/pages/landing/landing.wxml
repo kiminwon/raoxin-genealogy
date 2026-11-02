@@ -1,0 +1,144 @@
+<!--
+  进入宗族 —— 全产品唯一的入口，一页两态。
+
+  有码（从家族群点链接进来）：直接给预览，这是转化率最高的一屏，
+    三秒内让他确认「这是我家的谱」——堂号 → 始迁祖 → 熟悉的名字。
+  无码（自己打开小程序 / 码已失效）：只给输入框和一句解释。
+
+  无码态刻意不显示任何族的信息：家谱里已故先人的姓名是公开可查的，
+  码就是那道门。但门只在进族时问一次，进族之后各页面不再回头追问。
+-->
+<view class="page">
+
+  <!-- ============ 加载 ============ -->
+  <view wx:if="{{loading}}" class="loading">
+    <view class="skeleton sk-l sk-tall"></view>
+    <view class="skeleton sk-l"></view>
+    <view class="skeleton sk-l sk-short"></view>
+    <view class="loading-tip">正在打开这本谱…</view>
+  </view>
+
+  <!-- ============ 态 B：输码进族 ============ -->
+  <block wx:elif="{{stage === 'input'}}">
+
+    <view class="gate">
+      <view class="gate-mark">谱</view>
+      <view class="gate-title">找到你家的谱</view>
+      <view class="gate-sub">输入家族码即可进入</view>
+    </view>
+
+    <view class="card">
+      <view class="field-label">家族码</view>
+      <input
+        class="code-input"
+        value="{{codeInput}}"
+        focus="{{inputFocus}}"
+        placeholder="例如 CHEN2026"
+        placeholder-class="code-ph"
+        maxlength="16"
+        confirm-type="go"
+        bindinput="onCodeInput"
+        bindfocus="onCodeFocus"
+        bindconfirm="onLookup"
+      />
+      <view wx:if="{{codeError}}" class="code-err">{{codeError}}</view>
+      <view
+        class="btn btn-primary gate-btn {{looking ? 'btn-disabled' : ''}}"
+        bindtap="onLookup"
+      >{{looking ? '正在查找…' : '进入家族'}}</view>
+    </view>
+
+    <view class="card">
+      <view class="card-title">为什么要一个码</view>
+      <view class="why-item">· 家谱里已故先人的姓名是完整可查的，所以要有一道门</view>
+      <view class="why-item">· 码由族里的家人分享给你，一族人共用一个</view>
+      <view class="why-item">· 进族之后就能看到世系，答出长辈的名字即可确认自己是谁</view>
+    </view>
+
+    <view class="card">
+      <view class="card-title">还没有码？</view>
+      <view class="why-item">
+        请联系把这个小程序转给你的家人，或族里的房长，向他索取家族码。
+      </view>
+    </view>
+
+  </block>
+
+  <!-- ============ 态 A：祠堂门厅 ============
+       牌匾长在建筑上：底图自带一块空白黛青匾（无字），家族名/堂号是
+       文字层精确叠在匾面上——换家族只换字，一套底图所有族共用。
+       统计信息按需求放下半部分纸色区，牌匾上只留堂号 + 族名。
+       未来理事会上传真实祠堂图（family.hallImage）时走浮动牌匾卡回退。 -->
+  <block wx:else>
+
+    <!-- 祠堂 + 匾 -->
+    <view class="hall">
+      <image class="hall-bg" src="/images/hall-bg.jpg" mode="widthFix" />
+
+      <!-- 匾面文字层：坐标对准底图上的空匾（金框内沿 x 24%-76% / y 14%-28.5%） -->
+      <view class="plaque-text">
+        <view class="plaque-tang">
+          <text wx:if="{{family.tangHao}}">{{family.tangHao}}</text>
+          <text wx:else>宗族谱牒</text>
+        </view>
+        <view class="plaque-name">{{family.name}}</view>
+      </view>
+
+      <!-- 底部渐隐，让祠堂"长"进纸色页 -->
+      <view class="hall-fade"></view>
+    </view>
+
+    <!-- 下半部分：统计信息 + 邀请人（纸色区，文档流自然排布） -->
+    <view class="under-hall">
+      <view class="hall-stats">
+        <view wx:if="{{family.settlePlace}}" class="hall-stat-item">{{family.settlePlace}}</view>
+        <view wx:if="{{family.personCount || family.generationCount}}" class="hall-stat-sep"></view>
+        <view wx:if="{{family.personCount}}" class="hall-stat-item">{{family.personCount}} 人</view>
+        <view wx:if="{{family.personCount && family.generationCount}}" class="hall-stat-sep"></view>
+        <view wx:if="{{family.generationCount}}" class="hall-stat-item">{{family.generationCount}} 世</view>
+      </view>
+      <view wx:if="{{family.founderName}}" class="hall-founder">
+        始迁祖　{{family.founderName}}<text wx:if="{{family.founderEra}}">（{{family.founderEra}}）</text>
+      </view>
+
+      <!-- 谁邀请的：进门的"人话" -->
+      <view class="hall-foot">
+        <view class="inviter-line">
+          <text class="inviter-name">{{inviter.nickname || '族中一位家人'}}</text>
+          <text class="inviter-txt">邀请您入谱</text>
+        </view>
+        <view wx:if="{{inviter.note}}" class="inviter-note">「{{inviter.note}}」</view>
+        <view wx:if="{{anchor.displayName}}" class="inviter-anchor">
+          进来先看
+          <text class="inviter-anchor-name">{{anchor.displayName}}</text>
+          <text wx:if="{{anchor.generationLabel}}">（{{anchor.generationLabel}}）</text>
+          这一家
+        </view>
+      </view>
+    </view>
+
+    <!-- 编辑权范围（只有编辑码才有） -->
+    <view wx:if="{{scopePreview}}" class="card scope">
+      <view class="card-title">您被邀请填写这一块</view>
+      <view class="scope-summary">{{scopePreview.summary}}</view>
+      <view class="scope-tip">
+        只会开放给您的直系亲属范围。别人的部分您看不到、也改不了。
+      </view>
+    </view>
+
+    <view class="ft-gap"></view>
+
+    <!-- 底部动作 -->
+    <view class="ft safe-bottom">
+      <view class="btn btn-primary ft-btn {{accepting ? 'btn-disabled' : ''}}" bindtap="onAccept">
+        {{accepting ? '正在入谱…' : primaryText}}
+      </view>
+      <view wx:if="{{codeType === 2}}" class="ft-sub" bindtap="onSkip">
+        先不填，只进去看看
+      </view>
+      <view class="ft-sub ft-sub-quiet" bindtap="onBackToInput">
+        换一个家族码
+      </view>
+    </view>
+  </block>
+</view>

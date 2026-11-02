@@ -1,0 +1,102 @@
+/* 待办页 */
+
+.page {
+  min-height: 100vh;
+  padding: 24rpx 28rpx 60rpx;
+  box-sizing: border-box;
+}
+
+.skeleton-wrap { padding-top: 8rpx; }
+
+.sk-card {
+  height: 180rpx;
+  border-radius: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+/* ---------- 完整度 ---------- */
+
+.progress-card { padding: 28rpx 30rpx; }
+
+.pc-name {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.pc-pct {
+  font-size: 40rpx;
+  font-weight: 600;
+  color: var(--dai);
+  font-variant-numeric: tabular-nums;
+}
+
+.pc-bar {
+  height: 12rpx;
+  border-radius: 999rpx;
+  background: var(--paper-2);
+  overflow: hidden;
+  margin: 18rpx 0 14rpx;
+}
+
+.pc-fill {
+  height: 100%;
+  border-radius: 999rpx;
+  background: var(--dai);
+  transition: width 0.3s ease;
+}
+
+.pc-sub {
+  font-size: 24rpx;
+  color: var(--ink-3);
+}
+
+.pc-sub.pc-done { color: var(--jade); }
+
+/* ---------- 任务 ---------- */
+
+.sec-title {
+  font-size: 26rpx;
+  color: var(--ink-3);
+  margin: 30rpx 0 14rpx 6rpx;
+  letter-spacing: 2rpx;
+}
+
+.task {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  padding: 28rpx 30rpx;
+  margin-bottom: 16rpx;
+}
+
+.task-q {
+  flex: 1;
+  font-size: 29rpx;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.task-go {
+  flex-shrink: 0;
+  font-size: 26rpx;
+  color: var(--dai);
+}
+
+/* ---------- 完成态 ---------- */
+
+.done-card { padding: 34rpx 30rpx; }
+
+.done-t { font-size: 30rpx; font-weight: 600; color: var(--ink); }
+.done-s { font-size: 25rpx; color: var(--ink-3); margin-top: 6rpx; }
+
+.next-btn { margin-top: 28rpx; }
+
+.tip {
+  margin-top: 30rpx;
+  padding: 0 6rpx;
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: var(--ink-3);
+}

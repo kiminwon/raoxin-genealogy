@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "族谱",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "usingComponents": {
+    "person-sheet": "/components/person-sheet/person-sheet",
+    "tree-canvas": "/components/tree-canvas/tree-canvas"
+  }
+}

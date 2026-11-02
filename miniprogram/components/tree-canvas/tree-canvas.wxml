@@ -1,0 +1,28 @@
+<!--
+  全族大宏图的 Canvas 树状图（2026-10-29 第四版：固定 1:1 + 左栏丁口）。
+
+  为什么这一屏用 canvas 而不是 view 拼节点：
+  老谱一次导入就有 15 代 / 500+ 人，用绝对定位要 2000+ 个节点、
+  画布宽到 9500px——view 拼不出这个量级，只能画。
+
+  为什么**不缩放**（第四版定稿）：
+  整屏适配 564 人时字号 0.47px，读不出任何名字；缩放又给长辈多一层操作。
+  折中是固定 1:1：卡牌 88×96 屏幕像素、名字 22px 永远可读，
+  上下左右滑动看全族，左侧一列丁口统计固定不动（横向滑不跑、纵向对行）。
+
+  canvas 用 type="2d"：同层渲染，触摸事件能被自己收到，
+  也不会像旧版原生 canvas 那样盖住一切。
+-->
+<canvas
+  type="2d"
+  id="ov"
+  class="ov"
+  disable-scroll="{{true}}"
+  bindtouchstart="_onTouchStart"
+  bindtouchmove="_onTouchMove"
+  bindtouchend="_onTouchEnd"
+  bindtouchcancel="_onTouchEnd"
+></canvas>
+
+<view wx:if="{{showHint}}" class="ov-hint">上下左右滑动看全族 · 点一个人加家人或看详情</view>
+<view wx:if="{{showEmpty}}" class="ov-empty">{{emptyText}}</view>

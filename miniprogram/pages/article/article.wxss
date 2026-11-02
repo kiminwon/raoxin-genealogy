@@ -1,0 +1,127 @@
+.page {
+  min-height: 100vh;
+  padding: 30rpx 30rpx 160rpx;
+  box-sizing: border-box;
+}
+
+/* ---------- 读 ---------- */
+
+.head {
+  text-align: center;
+  padding: 10rpx 0 26rpx;
+}
+
+.cat {
+  display: inline-block;
+  font-size: 22rpx;
+  padding: 6rpx 18rpx;
+  border-radius: 8rpx;
+  background: var(--dai-bg);
+  color: var(--dai);
+  letter-spacing: 2rpx;
+}
+
+.title {
+  margin-top: 16rpx;
+  font-size: 40rpx;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+.meta {
+  margin-top: 10rpx;
+  font-size: 23rpx;
+  color: var(--ink-3);
+}
+
+.body {
+  background: var(--card);
+  border: 1rpx solid var(--line);
+  border-radius: 16rpx;
+  padding: 34rpx 30rpx;
+}
+
+/* 正文首行缩进两字，段落间留白——老谱竖排改横排后最接近纸面的排法 */
+.para {
+  font-size: 30rpx;
+  line-height: 1.9;
+  color: var(--ink);
+  text-align: justify;
+  text-indent: 2em;
+  margin-bottom: 20rpx;
+}
+
+.para:last-child {
+  margin-bottom: 0;
+}
+
+.ft {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx 30rpx calc(16rpx + env(safe-area-inset-bottom));
+  background: var(--paper);
+  border-top: 1rpx solid var(--line);
+}
+
+/* ---------- 写 ---------- */
+
+.form {
+  padding: 26rpx 26rpx 30rpx;
+}
+
+.f-label {
+  font-size: 25rpx;
+  color: var(--ink-3);
+  margin: 18rpx 0 8rpx;
+}
+
+.f-label:first-child {
+  margin-top: 0;
+}
+
+.f-picker {
+  height: 76rpx;
+  line-height: 76rpx;
+  padding: 0 20rpx;
+  border: 1rpx solid var(--line);
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: var(--ink);
+}
+
+.f-input {
+  height: 76rpx;
+  padding: 0 20rpx;
+  border: 1rpx solid var(--line);
+  border-radius: 12rpx;
+  font-size: 28rpx;
+}
+
+.f-textarea {
+  width: 100%;
+  height: 560rpx;
+  padding: 20rpx;
+  border: 1rpx solid var(--line);
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  line-height: 1.8;
+  box-sizing: border-box;
+}
+
+.f-hint {
+  margin-top: 8rpx;
+  text-align: right;
+  font-size: 22rpx;
+  color: var(--ink-3);
+}
+
+.ft-del {
+  font-size: 26rpx;
+  color: var(--seal);
+}

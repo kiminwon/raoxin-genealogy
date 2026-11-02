@@ -1,0 +1,2 @@
+/* 小程序全局样式。所有页面的视觉变量都在 styles/common.wxss 里。 */
+@import './styles/common.wxss';

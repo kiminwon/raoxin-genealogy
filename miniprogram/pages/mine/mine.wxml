@@ -1,0 +1,181 @@
+<!--
+  我的。
+
+  这一页解决的是"我在这个产品里到底是个什么身份"：
+  认领了谁、在哪个族、什么角色、我手里的码是什么。
+  之前这些信息散在流程里，用户第二次打开就找不到——尤其是邀请码，
+  它是接力修谱的发令枪，却连个能看的地方都没有。
+
+  刻意不放的东西：等级/积分/勋章/商城。首期一个族几十上百人，
+  这些只会稀释"补一格"这一个动作。
+-->
+<view class="page">
+
+  <view wx:if="{{loading}}" class="skeleton-wrap">
+    <view class="skeleton sk-block" wx:for="{{[1,2,3]}}" wx:key="*this"></view>
+  </view>
+
+  <block wx:else>
+    <!-- ============ 身份卡 ============ -->
+    <view class="id-card">
+      <view class="id-avatar">{{initial}}</view>
+      <view class="id-main">
+        <view class="id-name">{{nickname || '家族成员'}}</view>
+        <view class="id-sub" wx:if="{{familyId}}">
+          {{familyName}}<text wx:if="{{roleText}}"> · {{roleText}}</text>
+        </view>
+        <view class="id-sub" wx:else>还没有进入家族</view>
+      </view>
+      <button
+        wx:if="{{familyId && viewCode}}"
+        class="id-share"
+        open-type="share"
+        hover-class="none"
+      >分享家族</button>
+    </view>
+
+    <!-- 认领状态：这是全产品最重要的一行信息 -->
+    <view class="claim-row {{claimedName ? 'claim-on' : 'claim-off'}}" bindtap="onClaimTap">
+      <block wx:if="{{claimedName}}">
+        <text class="claim-label">我在谱上</text>
+        <text class="claim-value">{{claimedName}}</text>
+        <text class="claim-arrow">›</text>
+      </block>
+      <block wx:else>
+        <text class="claim-label claim-label-off">还没在谱上找到我</text>
+        <text class="claim-cta">去确认 ›</text>
+      </block>
+    </view>
+
+    <!-- ============ 我这一格（原「待办」tab，2026-11-02 撤到这里） ============
+         为什么不再单独占一个 tab：一级入口要和"看族谱、看动态、看谱文"同量级，
+         而待办是**关于我自己的一个动作**，放在"我的"里语义才对。
+         内容照旧：完整度（有尽头感）+ 现在就能补的 3 条（别一次给 20 条）。 -->
+    <view wx:if="{{familyId}}" class="mtodo">
+      <block wx:if="{{claimedPersonId}}">
+        <view class="mtodo-head">
+          <text class="mtodo-title">我这一格</text>
+          <text wx:if="{{missingCount >= 0}}" class="mtodo-pct">{{percent}}%</text>
+        </view>
+        <view class="mtodo-bar">
+          <view class="mtodo-fill" style="width:{{percent}}%"></view>
+        </view>
+
+        <!-- 数字和人是绑定的：说"还差 N 项"就必须点名是谁的那一格 -->
+        <view wx:if="{{missingCount > 0}}" class="mtodo-sub">
+          还差 {{missingCount}} 项<text wx:if="{{todoName}}"> · {{todoName}}这一格</text>
+        </view>
+        <view wx:elif="{{missingCount === 0}}" class="mtodo-sub mtodo-done">这一格已经完整了</view>
+        <view wx:else class="mtodo-sub">暂时没读到您这一格的情况，下拉刷新试试</view>
+
+        <view wx:if="{{todoItems.length}}" class="mtodo-list">
+          <view
+            class="mtodo-item"
+            wx:for="{{todoItems}}"
+            wx:key="key"
+            hover-class="mtodo-item-hover"
+            bindtap="onTodoItem"
+          >
+            <text class="mtodo-q">{{item.question}}</text>
+            <text class="mtodo-go">去补 ›</text>
+          </view>
+        </view>
+
+        <view class="mtodo-all" hover-class="mtodo-all-hover" bindtap="onTodoAll">
+          逐条补完{{missingCount > 0 ? ' · 共 ' + missingCount + ' 项' : ''}} ›
+        </view>
+      </block>
+
+      <view wx:else class="mtodo-claim" bindtap="onClaimTap">
+        <view class="mtodo-claim-t">还没在谱上找到我</view>
+        <view class="mtodo-claim-s">答两个名字就能对上「我」，之后这里会列出这一格缺什么</view>
+        <text class="mtodo-claim-go">去确认 ›</text>
+      </view>
+    </view>
+
+    <!-- ============ 我加入的族（书架） ============ -->
+    <view class="sec-head">
+      <text class="sec-title">我加入的家族</text>
+      <text class="sec-count" wx:if="{{families.length}}">{{families.length}} 个</text>
+    </view>
+
+    <view wx:if="{{families.length}}" class="shelf">
+      <view
+        wx:for="{{families}}"
+        wx:key="familyId"
+        class="book {{item.current ? 'book-on' : ''}}"
+        data-id="{{item.familyId}}"
+        data-current="{{item.current}}"
+        bindtap="onSwitchFamily"
+      >
+        <view class="book-spine">{{item.surname || '族'}}</view>
+        <view class="book-main">
+          <view class="book-name">{{item.name}}</view>
+          <view class="book-meta">{{item.roleText}}<text wx:if="{{!item.claimedPersonId}}"> · 未认领</text></view>
+        </view>
+        <view wx:if="{{item.current}}" class="book-badge">当前</view>
+      </view>
+    </view>
+
+    <view wx:else class="empty-mini">还没有加入任何家族</view>
+
+    <view class="add-family" bindtap="onAddFamily">＋ 加入其他家族</view>
+
+    <!-- ============ 理事会工作台（role>=2 才出现） ============
+         入口只对理事会成员显示：族人看不到这个按钮，也不会因为点进去
+         被拒而以为自己被区别对待。真正的权限判断在后端。 -->
+    <block wx:if="{{isReviewer}}">
+      <view class="sec-head">
+        <text class="sec-title">理事会</text>
+      </view>
+      <view class="admin-entry" hover-class="admin-entry-hover" bindtap="onAdmin">
+        <view class="admin-mark">谱</view>
+        <view class="admin-main">
+          <view class="admin-title">理事会工作台</view>
+          <view class="admin-sub">认领审核 · 答题解禁 · 待办数字</view>
+        </view>
+        <view class="admin-arrow">›</view>
+      </view>
+    </block>
+
+    <!-- ============ 邀请家人进谱 ============ -->
+    <!--
+      这一块以前是「我的邀请码」（个人编辑码）。编辑码已下线：
+      权限只来自认领，不随链接走（决策 9）。
+      分享留下的唯一作用就是**锚点**——对方点开先看到分享人这一家。
+    -->
+    <view class="sec-head">
+      <text class="sec-title">邀请家人进谱</text>
+    </view>
+
+    <block wx:if="{{claimedName}}">
+      <view class="inv-share">
+        <view class="inv-share-txt">
+          家人点开链接直接进家谱，不用输家族码。第一眼看到的是
+          <text class="inv-share-name">{{claimedName}}</text>
+          这一家——他认得出您，就知道该往哪儿填。
+        </view>
+        <button class="btn btn-primary btn-sm inv-share-btn" open-type="share" hover-class="none">
+          分享给家人
+        </button>
+        <view class="inv-share-tip">
+          他们入族后能看全族世系；要填自己那一格，先确认一下身份就行。
+        </view>
+      </view>
+    </block>
+
+    <block wx:else>
+      <view class="inv-hint">
+        先确认您是哪一位。链接里会带上您，家人点开时第一眼看到的就是您这一家。
+      </view>
+      <view class="btn btn-primary btn-sm gen-btn" bindtap="onClaimTap">
+        确认我的身份
+      </view>
+    </block>
+
+    <view class="foot">
+      <text>饶信谱脉</text>
+      <text wx:if="{{backend}}"> · {{backend === 'cloud' ? '云端' : '本地'}}</text>
+    </view>
+  </block>
+</view>

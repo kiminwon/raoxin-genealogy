@@ -1,0 +1,90 @@
+{
+  "description": "饶信谱脉 · 上饶广信区家谱数字化小程序",
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "preloadBackgroundData": false,
+    "minified": true,
+    "newFeature": true,
+    "coverView": true,
+    "nodeModules": false,
+    "autoAudits": false,
+    "showShadowRootInWxmlPanel": true,
+    "scopeDataCheck": false,
+    "uglifyFileName": false,
+    "checkInvalidKey": true,
+    "checkSiteMap": true,
+    "uploadWithSourceMap": true,
+    "compileHotReLoad": false,
+    "lazyloadPlaceholderEnable": false,
+    "useMultiFrameRuntime": true,
+    "useApiHook": true,
+    "useApiHostProcess": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "enableEngineNative": false,
+    "useIsolateContext": true,
+    "userConfirmedBundleSwitch": false,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "disableUseStrict": false,
+    "minifyWXML": true,
+    "showES6CompileOption": false,
+    "useCompilerPlugins": false,
+    "compileWorklet": false,
+    "localPlugins": false,
+    "condition": false
+  },
+  "compileType": "miniprogram",
+  "libVersion": "3.5.5",
+  "appid": "wxc60a4e39eac75ff9",
+  "projectname": "raoxin-genealogy",
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "落地页·无码（输家族码）",
+          "pathName": "pages/landing/landing",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "落地页·有码（族浏览码）",
+          "pathName": "pages/landing/landing",
+          "query": "code=CHEN2026",
+          "scene": 1044
+        },
+        {
+          "name": "落地页·有码（编辑码）",
+          "pathName": "pages/landing/landing",
+          "query": "code=K7M2P9QT",
+          "scene": 1044
+        },
+        {
+          "name": "族谱",
+          "pathName": "pages/home/home",
+          "query": "familyId=1&anchor=12",
+          "scene": null
+        },
+        {
+          "name": "待补全清单",
+          "pathName": "pages/fill/fill",
+          "query": "personId=12",
+          "scene": null
+        }
+      ]
+    }
+  },
+  "simulatorPluginLibVersion": {},
+  "editorSetting": {}
+}

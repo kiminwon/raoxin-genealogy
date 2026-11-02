@@ -1,0 +1,200 @@
+<!--
+  人物详情 / 编辑。
+  两种模式共用一个页面：看和改不该是两屏——
+  用户想改的时候，往往正是他看着这一条信息的时候。
+-->
+<view class="page">
+
+  <!-- ============ 加载 ============ -->
+  <view wx:if="{{loading}}" class="loading">
+    <view class="skeleton sk-h"></view>
+    <view class="skeleton sk-l"></view>
+    <view class="skeleton sk-l sk-short"></view>
+  </view>
+
+  <block wx:elif="{{person}}">
+
+    <!-- ============ 只读：头部 ============ -->
+    <view wx:if="{{!editing}}" class="hd">
+      <view class="hd-name-row">
+        <text class="hd-name">{{person.displayName}}</text>
+        <text wx:if="{{person.isLineageCarrier}}" class="hd-carry">承袭世系</text>
+      </view>
+
+      <view class="hd-tags">
+        <text wx:if="{{genText}}" class="tag tag-grey">{{genText}}</text>
+        <text wx:if="{{roleText}}" class="tag tag-gold">{{roleText}}</text>
+        <text class="tag {{livingCls}}">{{livingText}}</text>
+        <text wx:if="{{person.myPermissions.alreadyClaimedByMe}}" class="tag tag-seal">我</text>
+      </view>
+
+      <view wx:if="{{lifeText}}" class="hd-life">{{lifeText}}</view>
+    </view>
+
+    <!-- ============ 只读：关系链 ============ -->
+    <view wx:if="{{!editing && relatives.length}}" class="card">
+      <view class="card-title">上下左右</view>
+
+      <view wx:for="{{relatives}}" wx:key="key" class="rel-row">
+        <view class="rel-label">{{item.relation}}</view>
+        <view class="rel-persons">
+          <view
+            wx:for="{{item.persons}}"
+            wx:for-item="p"
+            wx:key="id"
+            class="rel-chip"
+            catchtap="onGoPerson"
+            data-id="{{p.id}}"
+          >
+            <text class="rel-chip-name">{{p.displayName}}</text>
+            <text wx:if="{{p.parentRelation === 2}}" class="rel-chip-tag">嗣</text>
+            <text wx:if="{{p.parentRelation === 3}}" class="rel-chip-tag">养</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ============ 只读：本生与嗣 ============ -->
+    <view wx:if="{{!editing && biological}}" class="card bio">
+      <view class="card-title">本生与嗣</view>
+      <view class="bio-note">{{biological.note}}</view>
+      <view wx:if="{{biological.father}}" class="bio-line">
+        <text class="bio-k">本生父</text>
+        <text class="bio-v" catchtap="onGoPerson" data-id="{{biological.father.id}}">{{biological.father.displayName}}</text>
+      </view>
+      <view wx:if="{{biological.adoptiveFather}}" class="bio-line">
+        <text class="bio-k">嗣　父</text>
+        <text class="bio-v" catchtap="onGoPerson" data-id="{{biological.adoptiveFather.id}}">{{biological.adoptiveFather.displayName}}</text>
+      </view>
+      <view class="bio-tip">树上按嗣父的位置排列，这里把两条关系都留着——信息不丢，位置不冲突。</view>
+    </view>
+
+    <!-- ============ 只读：记载 ============ -->
+    <view wx:if="{{!editing}}" class="card">
+      <view class="card-title">谱上记载</view>
+      <block wx:if="{{fields.length}}">
+        <view wx:for="{{fields}}" wx:key="label" class="f-row">
+          <text class="f-label">{{item.label}}</text>
+          <text class="f-value">{{item.value}}</text>
+        </view>
+      </block>
+      <view wx:else class="f-empty">这一条还只有姓名。往下拉，把您知道的添上。</view>
+    </view>
+
+    <!-- ============ 只读：待补全 ============ -->
+    <view wx:if="{{!editing && person.pending && person.pending.missingCount > 0}}" class="card pending" bindtap="onGoFill">
+      <view class="pending-line">
+        <text class="pending-num">{{person.pending.missingCount}}</text>
+        <text class="pending-txt">处可以补</text>
+      </view>
+      <view class="pending-sub">点这里，一次只问您一个问题</view>
+    </view>
+
+    <view class="ft-gap"></view>
+
+    <!-- ============ 只读：底部动作 ============ -->
+    <!-- 「看他在树上的位置」是只读动作，任何人任何时候都该有：
+         原来它挂在 elif 分支里，只有"不能认领也不能编辑"时才出现——
+         恰恰是最需要定位先人的那批人（已认领、能编辑）看不到它。 -->
+    <view wx:if="{{!editing}}" class="ft safe-bottom">
+      <view wx:if="{{person.myPermissions.canClaim}}" class="btn btn-plain grow" bindtap="onClaim">这是我的先人</view>
+      <view
+        wx:if="{{person.myPermissions.canEdit}}"
+        class="btn btn-primary grow"
+        bindtap="onStartEdit"
+      >补充 / 订正</view>
+      <view class="btn btn-plain grow" bindtap="onBackToTree">看他在树上的位置</view>
+    </view>
+
+    <!-- ============ 编辑模式 ============ -->
+    <block wx:if="{{editing}}">
+      <view class="edit-hd">
+        <view class="edit-title">补充 {{person.displayName}} 的信息</view>
+        <view class="edit-sub">自己这一支改完立刻生效，改错了随时能改回来；超出范围的改动会交给房长过目。</view>
+      </view>
+
+      <view class="card">
+        <view wx:for="{{form}}" wx:key="key" class="ef">
+          <view class="ef-label">
+            {{item.label}}
+            <text wx:if="{{item.optional}}" class="ef-opt">选填</text>
+          </view>
+
+          <!-- 文本 -->
+          <input
+            wx:if="{{item.type === 'text'}}"
+            class="ef-input"
+            value="{{item.value}}"
+            focus="{{editFocusIdx === index}}"
+            placeholder="{{item.placeholder || '未填写'}}"
+            data-index="{{index}}"
+            bindfocus="onEditFocus"
+            bindinput="onInput"
+          />
+
+          <!-- 多行 -->
+          <textarea
+            wx:elif="{{item.type === 'textarea'}}"
+            class="ef-textarea"
+            value="{{item.value}}"
+            focus="{{editFocusIdx === index}}"
+            placeholder="{{item.placeholder || '未填写'}}"
+            maxlength="500"
+            auto-height
+            data-index="{{index}}"
+            bindfocus="onEditFocus"
+            bindinput="onInput"
+          />
+
+          <!-- 日期 -->
+          <picker
+            wx:elif="{{item.type === 'date'}}"
+            mode="date"
+            value="{{item.value || '1970-01-01'}}"
+            start="1800-01-01"
+            end="{{today}}"
+            data-index="{{index}}"
+            bindchange="onDate"
+          >
+            <view class="ef-picker">{{item.value || '点这里选择'}}</view>
+          </picker>
+
+          <!-- 单选 -->
+          <picker
+            wx:elif="{{item.type === 'picker'}}"
+            range="{{item.labels}}"
+            value="{{item.index}}"
+            data-index="{{index}}"
+            bindchange="onPicker"
+          >
+            <view class="ef-picker">{{item.labels[item.index] || '点这里选择'}}</view>
+          </picker>
+        </view>
+
+        <view class="ef-hint">
+          出生日期记不清的话，选一个大约的年份就行，精度可以在下面选。
+        </view>
+      </view>
+
+      <!-- 字辈提示（决策第 1 条：只提示，绝不阻断） -->
+      <view wx:if="{{generationHint}}" class="hint-bar">
+        <text class="hint-ico">字辈</text>
+        <text class="hint-txt">{{generationHint.message}}</text>
+      </view>
+
+      <view class="ft-gap"></view>
+
+      <view class="ft safe-bottom">
+        <view class="btn btn-plain grow" bindtap="onCancelEdit">取消</view>
+        <view class="btn btn-primary grow {{submitting ? 'btn-disabled' : ''}}" bindtap="onSubmit">
+          {{submitting ? '提交中…' : '提交'}}
+        </view>
+      </view>
+    </block>
+  </block>
+
+  <view wx:else class="empty">
+    <view class="empty-mark">谱</view>
+    <view>{{errorText || '没有找到这一条'}}</view>
+  </view>
+</view>

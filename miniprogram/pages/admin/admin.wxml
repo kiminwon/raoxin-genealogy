@@ -1,0 +1,91 @@
+<!--
+  理事会工作台。
+
+  为什么单独一页：12 个管理接口原来一个页面都没有，遇到事只能让技术改库。
+  这一页只放**理事会长真会用到的东西**，不放数据大屏：
+    · 三个数字（待审认领 / 待审修订 / 已认领人数）——知道今天有没有事要处理
+    · 答题被卡住的成员——家里人打电话说"小程序坏了"，多半是撞了限速
+  两条审核规矩写在页底：不替族里判辈分、不给"全部通过"。这不是免责声明，
+  是让每一个点审核的人知道自己在做什么。
+-->
+<view class="page">
+
+  <view wx:if="{{loading}}" class="skeleton-wrap">
+    <view class="skeleton sk-block" wx:for="{{[1,2,3]}}" wx:key="*this"></view>
+  </view>
+
+  <block wx:else>
+    <!-- ============ 头 ============ -->
+    <view class="gw-head">
+      <view class="gw-kicker">理事会工作台</view>
+      <view class="gw-fam">{{familyName || '本族'}}</view>
+      <view class="gw-role">{{roleText}}</view>
+    </view>
+
+    <!-- ============ 三个数字 ============ -->
+    <view class="stat-grid">
+      <view class="stat" bindtap="onGoClaims" data-status="1" hover-class="stat-hover">
+        <view class="stat-num {{stats.pendingClaimCount ? 'stat-hot' : ''}}">{{stats.pendingClaimCount || 0}}</view>
+        <view class="stat-label">待审认领</view>
+      </view>
+      <view class="stat" bindtap="onPendingRevision" hover-class="stat-hover">
+        <view class="stat-num {{stats.pendingRevisionCount ? 'stat-hot' : ''}}">{{stats.pendingRevisionCount || 0}}</view>
+        <view class="stat-label">待审修订</view>
+      </view>
+      <view class="stat" bindtap="onGoClaims" data-status="2" hover-class="stat-hover">
+        <view class="stat-num">{{stats.claimedUserCount || 0}}</view>
+        <view class="stat-label">已认领</view>
+      </view>
+    </view>
+
+    <view class="stat-foot">
+      在谱 {{stats.personCount || 0}} 人 · 在世 {{stats.livingCount || 0}} 人<text wx:if="{{stats.conflictCount}}"> · <text class="t-seal">{{stats.conflictCount}} 处填写冲突待定</text></text>
+    </view>
+
+    <!-- ============ 答题限速 ============ -->
+    <view class="card lock-card">
+      <view class="card-title">答题被卡住的成员</view>
+      <view class="lock-note">{{locksNote || '这里列出连续答错、暂时不能答题的成员。'}}</view>
+
+      <block wx:if="{{locks.length}}">
+        <view class="lock-row" wx:for="{{locks}}" wx:key="userId">
+          <view class="lock-main">
+            <view class="lock-name">
+              {{item.nickname || '未命名成员'}}
+              <text wx:if="{{item.personName}}" class="lock-person">· {{item.personName}}</text>
+              <text wx:if="{{item.generationLabel}}" class="lock-gen">{{item.generationLabel}}</text>
+            </view>
+            <view class="lock-reason">{{item.reasonText}} · {{item.retryAfterText}}</view>
+            <view class="lock-detail">已答 {{item.attempts}} 次，连续答错 {{item.failCount}} 次<text wx:if="{{item.lastAttemptAt}}"> · 最后一次 {{item.lastAttemptAt}}</text></view>
+          </view>
+          <view class="lock-btn" hover-class="lock-btn-hover" data-id="{{item.userId}}" data-name="{{item.nickname}}" bindtap="onUnlock">解禁</view>
+        </view>
+      </block>
+
+      <view wx:else class="lock-empty">
+        当前没有人被限速。有人答错被挡住时会出现在这里。
+      </view>
+    </view>
+
+    <!-- ============ 入口 ============ -->
+    <view class="card entry" hover-class="entry-hover" bindtap="onGoClaims" data-status="1">
+      <view class="entry-main">
+        <view class="entry-title">认领审核</view>
+        <view class="entry-sub">答题自证是主通道，这里做抽查与纠错</view>
+      </view>
+      <view class="entry-arrow">›</view>
+    </view>
+
+    <!-- ============ 两条规矩 ============ -->
+    <view class="card rules">
+      <view class="card-title">审核的两条规矩</view>
+      <view class="rule-item">· <text class="t-bold">不替族里判辈分</text>：两个人填的不一样时，系统只标「待确认」并通知双方，采信谁由理事会定，并且要写理由。</view>
+      <view class="rule-item">· <text class="t-bold">没有「全部通过」</text>：一批改动一次放行，错了会扩散到全族。可以勾选后批量处理，但勾哪几条要人自己点。</view>
+      <view class="rule-item">· 解禁不改任何家谱数据，只是把答题次数清零；计数存在服务内存里，后端重启也会清空。</view>
+    </view>
+
+    <view class="foot">
+      <text>饶信谱脉 · 理事会</text>
+    </view>
+  </block>
+</view>

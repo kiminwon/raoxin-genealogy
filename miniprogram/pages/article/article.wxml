@@ -1,0 +1,59 @@
+<!-- 谱文详情 / 编辑。一个页面两种态，不用两个页面：
+     文章不长，看完顺手改一处的动线最短。 -->
+<view class="page">
+
+  <!-- ============ 读 ============ -->
+  <block wx:if="{{mode === 'read'}}">
+    <view class="head">
+      <view class="cat">{{categoryLabel}}</view>
+      <view class="title">{{title}}</view>
+      <view wx:if="{{updatedAt}}" class="meta">编修于 {{updatedAt}}</view>
+    </view>
+
+    <view class="body">
+      <view class="para" wx:for="{{paragraphs}}" wx:key="*this">{{item}}</view>
+    </view>
+
+    <view wx:if="{{canEdit}}" class="ft safe-bottom">
+      <view class="btn btn-plain" bindtap="onEdit">编辑</view>
+    </view>
+  </block>
+
+  <!-- ============ 写 ============ -->
+  <block wx:else>
+    <view class="form card">
+      <view class="f-label">分类</view>
+      <picker range="{{categories}}" range-key="label" value="{{catIndex}}" bindchange="onCat">
+        <view class="f-picker">{{categories[catIndex].label}} ▾</view>
+      </picker>
+
+      <view class="f-label">标题</view>
+      <input
+        class="f-input"
+        value="{{form.title}}"
+        maxlength="128"
+        placeholder="如：民国十二年重修记"
+        bindinput="onTitle"
+      />
+
+      <view class="f-label">正文</view>
+      <textarea
+        class="f-textarea"
+        value="{{form.content}}"
+        maxlength="60000"
+        placeholder="空行分段。老谱怎么写的，这里就怎么抄"
+        bindinput="onContent"
+      ></textarea>
+      <view class="f-hint">当前 {{form.content.length}} 字</view>
+    </view>
+
+    <view class="ft safe-bottom">
+      <view wx:if="{{!isNew}}" class="ft-del" bindtap="onDelete">删除</view>
+      <view class="grow"></view>
+      <view class="btn btn-plain" bindtap="onCancel">取消</view>
+      <view class="btn btn-primary {{saving ? 'btn-disabled' : ''}}" bindtap="onSave">
+        {{saving ? '保存中…' : '保存'}}
+      </view>
+    </view>
+  </block>
+</view>

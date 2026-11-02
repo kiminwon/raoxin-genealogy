@@ -1,0 +1,13 @@
+{
+  "desc": "家谱内容涉及在世族人隐私，不参与微信搜索索引；仅开放落地页",
+  "rules": [
+    {
+      "action": "disallow",
+      "page": "*"
+    },
+    {
+      "action": "allow",
+      "page": "pages/landing/landing"
+    }
+  ]
+}

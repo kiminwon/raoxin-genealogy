@@ -1,0 +1,272 @@
+/* ============================================================
+   组件内自带的通用类兜底。
+
+   组件虽然设了 styleIsolation: apply-shared，但 app.wxss 的全局类
+   在真机上不一定能稳定穿透到组件内部。这几条本来就在 common.wxss 里，
+   在这里重复一次是为了不把组件的观感押在穿透行为上。
+   ============================================================ */
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 92rpx;
+  border-radius: 16rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.btn-primary {
+  background: #2B574B;
+  color: #FFFFFF;
+  box-shadow: 0 6rpx 16rpx rgba(43, 87, 75, 0.22);
+}
+
+.btn-plain {
+  background: #EDE8DB;
+  color: #1F2226;
+  border: 1rpx solid #E3DDCE;
+}
+
+.grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 40rpx;
+  padding: 0 14rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+  line-height: 1;
+}
+
+.tag-dai { background: #E6EEE9; color: #2B574B; }
+.tag-seal { background: #F7E9E5; color: #A6321E; }
+.tag-jade { background: #E7EFEA; color: #3F6B57; }
+.tag-gold { background: #F7F0DC; color: #B0741C; }
+.tag-grey { background: #EDE8DB; color: #85817A; }
+
+.skeleton {
+  background: linear-gradient(90deg, #EAE4D6 25%, #F3EFE4 37%, #EAE4D6 63%);
+  background-size: 400% 100%;
+  animation: ps-sk 1.4s ease infinite;
+  border-radius: 12rpx;
+}
+
+@keyframes ps-sk {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+.empty {
+  padding: 80rpx 40rpx;
+  text-align: center;
+  color: #85817A;
+  font-size: 28rpx;
+}
+
+.empty-mark {
+  font-size: 70rpx;
+  color: #D4CCB8;
+  margin-bottom: 16rpx;
+}
+
+.safe-bottom {
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+}
+
+/* ============================================================
+   以下为组件自身样式
+   ============================================================ */
+
+.ps-mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(20, 26, 36, 0.32);
+  z-index: 900;
+}
+
+.ps {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 901;
+  background: #FFFFFF;
+  border-radius: 28rpx 28rpx 0 0;
+  box-shadow: 0 -6rpx 30rpx rgba(20, 26, 36, 0.12);
+  transition: transform 0.26s cubic-bezier(0.32, 0.72, 0, 1);
+  max-height: 78vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.ps-in { transform: translateY(0); }
+.ps-out { transform: translateY(110%); }
+
+.ps-handle {
+  padding: 18rpx 0 8rpx;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ps-bar {
+  width: 72rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+  background: #E3DDCE;
+}
+
+.ps-body {
+  padding: 8rpx 36rpx 20rpx;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 200rpx;
+}
+
+/* ---------- 头部 ---------- */
+
+.ps-head {
+  margin-bottom: 14rpx;
+}
+
+.ps-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
+.ps-name {
+  font-size: 44rpx;
+  font-weight: 600;
+  color: #1F2226;
+  line-height: 1.3;
+}
+
+.ps-self {
+  flex-shrink: 0;
+}
+
+.ps-tags {
+  margin-top: 12rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.ps-life {
+  font-size: 28rpx;
+  color: #4E5459;
+  margin-top: 6rpx;
+}
+
+/* ---------- 字段 ---------- */
+
+.ps-fields {
+  margin-top: 22rpx;
+  border-top: 1rpx solid #E3DDCE;
+  padding-top: 6rpx;
+}
+
+.ps-field {
+  display: flex;
+  padding: 14rpx 0;
+  border-bottom: 1rpx solid #EDE8DB;
+  font-size: 28rpx;
+}
+
+.ps-flabel {
+  width: 140rpx;
+  flex-shrink: 0;
+  color: #85817A;
+}
+
+.ps-fvalue {
+  flex: 1;
+  color: #1F2226;
+  word-break: break-all;
+}
+
+/* ---------- 亲属 chips ---------- */
+
+.ps-chips {
+  margin-top: 24rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+
+.ps-chip {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  background: #EDE8DB;
+  border-radius: 12rpx;
+  padding: 12rpx 18rpx;
+}
+
+.ps-chip-rel {
+  font-size: 22rpx;
+  color: #85817A;
+}
+
+.ps-chip-name {
+  font-size: 26rpx;
+  color: #1F2226;
+  font-weight: 500;
+}
+
+/* ---------- 待补全 ---------- */
+
+.ps-pending {
+  margin-top: 24rpx;
+  background: #FBF6EC;
+  border-radius: 14rpx;
+  padding: 20rpx 22rpx;
+  display: flex;
+  gap: 12rpx;
+  font-size: 26rpx;
+  color: #8A6A24;
+  line-height: 1.55;
+}
+
+.ps-pending-ico {
+  color: #B0741C;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ---------- 动作 ---------- */
+
+.ps-actions {
+  display: flex;
+  gap: 20rpx;
+  padding: 20rpx 36rpx 24rpx;
+  border-top: 1rpx solid #EDE8DB;
+  flex-shrink: 0;
+}
+
+/* ---------- 骨架 ---------- */
+
+.ps-sk-name {
+  height: 52rpx;
+  width: 220rpx;
+  margin-bottom: 24rpx;
+}
+
+.ps-sk-line {
+  height: 30rpx;
+  margin-bottom: 16rpx;
+}
+
+.ps-sk-short {
+  width: 55%;
+}

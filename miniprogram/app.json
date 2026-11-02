@@ -1,0 +1,39 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/feed/feed",
+    "pages/articles/articles",
+    "pages/mine/mine",
+    "pages/landing/landing",
+    "pages/person/person",
+    "pages/fill/fill",
+    "pages/claim/claim",
+    "pages/article/article",
+    "pages/todo/todo",
+    "pages/admin/admin",
+    "pages/admin/claims/claims"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#F6F3EA",
+    "navigationBarTitleText": "饶信谱脉",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F6F3EA"
+  },
+  "tabBar": {
+    "color": "#85817A",
+    "selectedColor": "#2B574B",
+    "backgroundColor": "#F6F3EA",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/home/home", "text": "族谱" },
+      { "pagePath": "pages/feed/feed", "text": "动态" },
+      { "pagePath": "pages/articles/articles", "text": "谱文" },
+      { "pagePath": "pages/mine/mine", "text": "我的" }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "permission": {},
+  "lazyCodeLoading": "requiredComponents"
+}

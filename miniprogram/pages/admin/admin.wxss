@@ -1,0 +1,205 @@
+/* 理事会工作台。视觉与全站同一套：纸底、黛青、烫金只做点缀。 */
+
+.page {
+  min-height: 100vh;
+  padding: 0 28rpx 60rpx;
+  box-sizing: border-box;
+  background: var(--paper);
+}
+
+.skeleton-wrap { padding-top: 40rpx; }
+.sk-block { height: 200rpx; border-radius: 20rpx; margin-bottom: 20rpx; }
+
+/* ---------- 头 ---------- */
+
+.gw-head {
+  padding: 36rpx 6rpx 26rpx;
+}
+
+.gw-kicker {
+  font-size: 24rpx;
+  letter-spacing: 6rpx;
+  color: var(--ink-3);
+}
+
+.gw-fam {
+  margin-top: 10rpx;
+  font-size: 46rpx;
+  font-weight: 600;
+  letter-spacing: 3rpx;
+  color: var(--ink);
+}
+
+.gw-role {
+  display: inline-block;
+  margin-top: 14rpx;
+  padding: 6rpx 18rpx;
+  font-size: 23rpx;
+  letter-spacing: 2rpx;
+  color: var(--dai);
+  background: var(--dai-bg);
+  border-radius: 6rpx;
+}
+
+/* ---------- 三个数字 ---------- */
+
+.stat-grid {
+  display: flex;
+  gap: 14rpx;
+}
+
+.stat {
+  flex: 1;
+  padding: 26rpx 10rpx 22rpx;
+  background: var(--card);
+  border: 1rpx solid var(--line);
+  border-radius: 16rpx;
+  text-align: center;
+}
+
+.stat-hover { background: var(--paper-2); }
+
+.stat-num {
+  font-size: 52rpx;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 有活要干的时候数字是朱砂——一进页面就知道今天有事 */
+.stat-hot { color: var(--seal); }
+
+.stat-label {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: var(--ink-3);
+  letter-spacing: 1rpx;
+}
+
+.stat-foot {
+  margin-top: 14rpx;
+  padding: 0 6rpx;
+  font-size: 24rpx;
+  color: var(--ink-3);
+}
+
+/* ---------- 限速名单 ---------- */
+
+.lock-card { margin-top: 24rpx; }
+
+.lock-note {
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: var(--ink-3);
+  margin-bottom: 8rpx;
+}
+
+.lock-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 20rpx 0;
+  border-top: 1rpx solid var(--line);
+}
+
+.lock-main { flex: 1; min-width: 0; }
+
+.lock-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.lock-person { color: var(--ink-2); font-weight: 400; }
+
+.lock-gen {
+  margin-left: 10rpx;
+  font-size: 22rpx;
+  color: var(--ink-3);
+  font-weight: 400;
+}
+
+.lock-reason {
+  margin-top: 6rpx;
+  font-size: 26rpx;
+  color: var(--seal);
+}
+
+.lock-detail {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: var(--ink-3);
+  line-height: 1.6;
+}
+
+.lock-btn {
+  flex-shrink: 0;
+  padding: 0 26rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  font-size: 26rpx;
+  letter-spacing: 2rpx;
+  color: var(--dai);
+  border: 1rpx solid var(--dai-2);
+  border-radius: 30rpx;
+}
+
+.lock-btn-hover { background: var(--dai-bg); }
+
+.lock-empty {
+  padding: 26rpx 0 10rpx;
+  font-size: 26rpx;
+  color: var(--ink-3);
+  line-height: 1.7;
+}
+
+/* ---------- 入口 ---------- */
+
+.entry {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
+.entry-hover { background: var(--paper-2); }
+
+.entry-main { flex: 1; min-width: 0; }
+
+.entry-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.entry-sub {
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: var(--ink-3);
+}
+
+.entry-arrow {
+  font-size: 40rpx;
+  color: var(--line-2);
+  line-height: 1;
+}
+
+/* ---------- 规矩 ---------- */
+
+.rules { margin-top: 24rpx; }
+
+.rule-item {
+  font-size: 25rpx;
+  line-height: 1.8;
+  color: var(--ink-2);
+  margin-bottom: 12rpx;
+}
+
+.foot {
+  margin-top: 40rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: var(--line-2);
+  letter-spacing: 2rpx;
+}

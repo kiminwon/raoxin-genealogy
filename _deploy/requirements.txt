@@ -1,0 +1,7 @@
+# _deploy/ 下脚本的依赖（只在开发机上跑，不进服务器）
+#
+# 与 backend 的运行时依赖分开：服务器上用不着 SSH 客户端。
+#
+# 装：
+#   backend\.venv\Scripts\python.exe -m pip install -r _deploy/requirements.txt
+paramiko>=3.4

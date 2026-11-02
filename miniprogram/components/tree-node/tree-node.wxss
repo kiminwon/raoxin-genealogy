@@ -1,0 +1,170 @@
+/* 节点尺寸必须用 px 而不是 rpx——
+   服务端下发的 canvas 坐标就是 px，混用两套单位会让节点和连线错位。
+
+   配色与 styles/common.wxss 的变量一一对应，但这里**写字面量**：
+   自定义组件的样式作用域独立，不依赖宿主页面的 CSS 变量更稳。
+   黛青主色 #2B574B / 宣纸 #F6F3EA / 朱印 #A6321E / 青绿 #3F6B57。 */
+
+.tn {
+  position: absolute;
+  box-sizing: border-box;
+}
+
+.tn-card {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: 6px;
+  background: #FFFFFF;
+  border: 1px solid #D4CCB8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 4px;
+  overflow: hidden;
+}
+
+/* ---------- 姓名 ---------- */
+
+.tn-name {
+  font-size: 13px;
+  line-height: 1.25;
+  font-weight: 600;
+  color: #1F2226;
+  text-align: center;
+  word-break: break-all;
+  max-height: 34px;
+  overflow: hidden;
+}
+
+.tn-foot {
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.tn-gen {
+  font-size: 9px;
+  color: #85817A;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.tn-role {
+  font-size: 9px;
+  color: #B8860B;
+  line-height: 1;
+  background: #F7F0DC;
+  border-radius: 2px;
+  padding: 1px 3px;
+  white-space: nowrap;
+}
+
+/* ---------- 状态 ---------- */
+
+/* 已故：青绿字 + 米底。不标"故"字，颜色本身足够说明 */
+.tn-deceased .tn-card {
+  background: #F2F0E9;
+}
+.tn-deceased .tn-name {
+  color: #3F6B57;
+}
+
+/* 外姓（女婿 / 外孙）：虚线框。虚线的意思用户一眼就懂："这不算本支" */
+.tn-external .tn-card {
+  border-style: dashed;
+  background: #FAF8F1;
+  opacity: 0.94;
+}
+.tn-external .tn-name {
+  color: #4E5459;
+}
+
+/* 配偶：底色比本人浅一档，视觉上"贴"在本人旁边 */
+.tn-spouse .tn-card {
+  background: #F8F5ED;
+}
+
+/* ---------- 夫妻紧贴（2026-10-22） ----------
+   服务端把夫妻卡片排成零间距的一行，接缝两侧的圆角必须切平，
+   否则两个圆角对在一起会凹出缺口，看着像"没挨着"。
+   配偶卡靠接缝那条边换成浅色，接缝就成了一道分隔线而不是两重边框。 */
+.tn-flat-r .tn-card {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.tn-flat-l .tn-card {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left-color: #E7E1D2;
+}
+
+/* 离异：虚框。跟外姓的虚线区分开——外姓偏暖灰、离异偏冷灰，且名字一起转灰 */
+.tn-divorced .tn-card {
+  border-style: dashed;
+  border-color: #B9B3B8;
+  background: #FBF7F8;
+}
+.tn-divorced .tn-name {
+  color: #6B6470;
+}
+
+/* 始祖→我的这条线：金边。这是用户找自己位置时唯一需要的线索 */
+.tn-path .tn-card {
+  border-color: #D9BE72;
+}
+
+/* 自己：黛青。主色在树上只出现在这一个位置，所以它一定被看见 */
+.tn-self .tn-card {
+  border: 1.5px solid #2B574B;
+  background: #EEF2F8;
+  box-shadow: 0 1px 5px rgba(43, 87, 75, 0.22);
+}
+.tn-self .tn-name {
+  color: #2B574B;
+}
+
+/* 当前选中的节点（底部卡片正在展示它） */
+.tn-selected .tn-card {
+  box-shadow: 0 0 0 2px rgba(43, 87, 75, 0.45);
+}
+
+/* ---------- 角标 ---------- */
+
+/* "我"的角标留朱红：面积小，是个人印记，不会跟黛青主色打架 */
+.tn-flag {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  border-radius: 8px;
+  background: #A6321E;
+  color: #FFF;
+  font-size: 9px;
+  line-height: 15px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* 待补全不抢「我」的位置，放左下 */
+.tn-pending {
+  position: absolute;
+  bottom: -5px;
+  left: -5px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  border-radius: 8px;
+  background: #B0741C;
+  color: #FFF;
+  font-size: 9px;
+  line-height: 15px;
+  text-align: center;
+  box-sizing: border-box;
+}

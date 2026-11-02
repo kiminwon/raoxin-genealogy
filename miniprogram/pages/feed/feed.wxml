@@ -1,0 +1,17 @@
+<!--
+  家族动态 —— 占位页（2026-11-02）。
+  底 bar 先占住位置，内容口径等启明定了再写。
+  这里只交代"将来会有什么"，不假装已经有数据：
+  空列表比一句"敬请期待"更容易被当成"族里没人动过"。
+-->
+<view class="page">
+  <view class="hold">
+    <view class="hold-mark">记</view>
+    <view class="hold-title">家族动态</view>
+    <view class="hold-text">
+      谁补上了哪一格、谁写了一篇谱文、谁认下了自己的名字——
+      以后都会记在这里，像族里的一本流水账。
+    </view>
+    <view class="hold-note">正在编修 · 先占个位置</view>
+  </view>
+</view>

@@ -1,0 +1,24 @@
+<!--
+  树上的一个节点。
+  位置完全由父页面下发（服务端算好的 x/y），这个组件不做任何布局计算——
+  端上零排版的整条链路，从这一个文件开始。
+-->
+<view
+  class="tn {{cls}}"
+  style="left:{{node.x}}px;top:{{node.y}}px;width:{{node.w}}px;height:{{node.h}}px;"
+  catchtap="handleTap"
+>
+  <view class="tn-card">
+    <view class="tn-name">{{label}}</view>
+    <view class="tn-foot">
+      <text class="tn-gen">{{genText}}</text>
+      <text wx:if="{{roleText}}" class="tn-role">{{roleText}}</text>
+    </view>
+  </view>
+
+  <!-- 「我」的标记不做成大红块，只一个小角标——用户需要知道自己在哪，不需要被喊 -->
+  <view wx:if="{{node.isSelf}}" class="tn-flag">我</view>
+
+  <!-- 待补全：数字表示缺几项，点了就直接进填写流程 -->
+  <view wx:if="{{pendingText}}" class="tn-pending">{{pendingText}}</view>
+</view>

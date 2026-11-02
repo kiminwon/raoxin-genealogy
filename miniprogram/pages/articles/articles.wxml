@@ -1,0 +1,41 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="loading-tip">正在打开谱匣…</view>
+
+  <view wx:elif="{{loadError}}" class="empty">
+    <view class="empty-mark">文</view>
+    <view>{{loadError}}</view>
+    <view class="btn btn-ghost btn-sm empty-btn" bindtap="onRetry">重新加载</view>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{!groups.length}}" class="empty">
+      <view class="empty-mark">文</view>
+      <view>还没有谱文</view>
+      <view class="t-sub">编修历史、迁徙源流、谱序，都可以在这里写下来</view>
+      <view wx:if="{{canEdit}}" class="btn btn-primary btn-sm empty-btn" bindtap="onCreate">写第一篇</view>
+    </view>
+
+    <view wx:else class="list">
+      <view class="group" wx:for="{{groups}}" wx:key="category" wx:for-item="g">
+        <view class="group-title">{{g.label}}</view>
+        <view
+          class="art card"
+          wx:for="{{g.items}}"
+          wx:key="id"
+          data-id="{{item.id}}"
+          bindtap="onOpen"
+          hover-class="art-hover"
+        >
+          <view class="art-title ellipsis">{{item.title}}</view>
+          <view class="art-excerpt ellipsis">{{item.excerpt}}</view>
+          <view class="art-meta">{{item.updatedAt}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 房长的写作入口。族人看不到这颗按钮，编辑页里还有第二道（403 会兜住） -->
+    <view wx:if="{{canEdit}}" class="fab" bindtap="onCreate">＋ 写谱文</view>
+    <view wx:else class="foot-hint">谱文由理事会编修，想补充内容请联系理事会成员</view>
+    <view class="safe-bottom"></view>
+  </block>
+</view>

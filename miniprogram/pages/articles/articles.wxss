@@ -1,0 +1,77 @@
+.page {
+  min-height: 100vh;
+  padding: 24rpx 24rpx 140rpx;
+  box-sizing: border-box;
+}
+
+.loading-tip {
+  padding: 80rpx 0;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 26rpx;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+}
+
+.group-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--ink-3);
+  margin: 0 4rpx 12rpx;
+  /* 传统谱目录的味道：分类名前加一道竖批 */
+  padding-left: 14rpx;
+  border-left: 6rpx solid var(--dai-3);
+}
+
+.art {
+  padding: 22rpx 26rpx;
+  margin-bottom: 14rpx;
+}
+
+.art-hover { opacity: 0.8; }
+
+.art-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.art-excerpt {
+  margin-top: 8rpx;
+  font-size: 25rpx;
+  color: var(--ink-3);
+}
+
+.art-meta {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: var(--line-2);
+}
+
+.fab {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 48rpx;
+  padding: 20rpx 56rpx;
+  border-radius: 44rpx;
+  background: var(--dai);
+  color: #fff;
+  font-size: 29rpx;
+  font-weight: 600;
+  box-shadow: 0 8rpx 24rpx rgba(43, 87, 75, 0.28);
+}
+
+.foot-hint {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 40rpx;
+  text-align: center;
+  font-size: 23rpx;
+  color: var(--ink-3);
+}

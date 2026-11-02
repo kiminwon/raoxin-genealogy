@@ -1,0 +1,25 @@
+# 饶信谱脉 · 家谱小程序后端
+# Python 3.11+ （本机 3.13）
+# 安装：pip install -r requirements.txt
+
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+pydantic-settings==2.7.0
+
+# ORM 与数据库
+SQLAlchemy==2.0.36
+PyMySQL==1.1.1
+cryptography==44.0.0          # PyMySQL 连接 MySQL 8 的 caching_sha2_password 认证需要
+
+# 鉴权
+PyJWT==2.10.1
+
+# 调微信接口（code2session）
+httpx==0.28.1
+
+# 表单
+python-multipart==0.0.20
+
+# 开发期
+pytest==8.3.4

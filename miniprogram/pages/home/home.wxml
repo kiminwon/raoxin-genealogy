@@ -1,0 +1,364 @@
+<!--
+  族谱（首页，tab 名 2026-11-02 从「我的一家」改为「族谱」）。
+  这一屏的全部设计目的只有一个：让用户在两秒内看到「我在哪」，
+  然后顺手点开自己或父母，补上一条信息。
+
+  树区域的实现要点：所有节点和连线都按服务端下发的 px 坐标绝对定位，
+  端上不做任何布局计算。缩放用一个 transform 包住整个画布，
+  所以放大缩小时节点与连线的相对关系永远是对的。
+-->
+<view class="page">
+
+  <!-- ============ 顶部 ============ -->
+  <!-- 连族都没定下来时不显示族名和视图切换：那些此刻都还没有意义 -->
+  <view wx:if="{{!loadError}}" class="hd">
+    <!-- 家族卡。
+         为什么要这张卡：树只回答"我和谁连着"，不回答"这是哪个族、多大、录得全不全"。
+         而这些恰恰是老谱刚导入时用户最想确认的东西——"我们家 564 口人，都录进来了吗"。
+         只放四件事（堂号世系 / 规模 / 完整度 / 我的身份），其余一律不往这一屏塞。 -->
+    <view class="fam">
+      <!-- 黛青卡头：族名、身份、规模三件事压在一块深色上。
+           深色的作用不是好看，是给整屏一个视觉落脚点——
+           整屏都是米白时，用户第一眼不知道该看哪儿。 -->
+      <view class="fam-hero">
+        <view class="fam-head" bindtap="onOpenFamilies" hover-class="fam-head-hover">
+          <view class="grow">
+            <view class="fam-name-row">
+              <text class="fam-name ellipsis">{{familyName || '家族谱'}}</text>
+              <text wx:if="{{roleText}}" class="fam-role">{{roleText}}</text>
+            </view>
+            <view wx:if="{{familyLine}}" class="fam-line ellipsis">{{familyLine}}</view>
+          </view>
+          <view class="fam-swap">
+            <text class="fam-swap-ico">⇄</text>
+            <text>切换</text>
+          </view>
+        </view>
+
+        <view class="fam-stats">
+          <view class="fam-stat">
+            <text class="fam-v">{{famHead}}</text>
+            <text class="fam-k">人收录</text>
+          </view>
+          <view class="fam-sep"></view>
+          <view class="fam-stat">
+            <text class="fam-v">{{famGen}}</text>
+            <text class="fam-k">世</text>
+          </view>
+          <view class="fam-sep"></view>
+          <view class="fam-stat fam-stat-grow">
+            <text class="fam-k">完整度</text>
+            <view class="fam-bar"><view class="fam-fill" style="width:{{famPct}}%"></view></view>
+            <text class="fam-v fam-pct">{{famPct}}%</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="fam-body">
+        <!-- 搜索框化的意义：原来是一个写着"搜人"的小按钮，用户不知道点进去是对话框还是新页面，
+             就不点。做成输入框的形状，一眼就知道"这里能打字找人"。 -->
+        <view class="fam-search" bindtap="onSearch" hover-class="fam-search-hover">
+          <text class="fam-search-ico">⌕</text>
+          <text class="fam-search-ph">在谱里找一个人</text>
+        </view>
+
+      </view>
+    </view>
+
+    <!-- 两个大按钮 = 视图切换。
+         原来是右上角两个小 tab（我的一家/全族总览），长辈看不见也看不懂。
+         两个按钮**对称**：只有"选中/未选中"两态（选中黛青实底金字、未选中浅底描边），
+         不再预设哪个是主按钮——预设死的话，切到另一边就看不出切换发生了
+         （.bb-on 曾经根本没写样式，2026-10-29 实报"点了按钮颜色不变"）。
+         全族大宏图 2026-10-29 起是 1:1 的谱牌树（名字永远可读、只平移不缩放），
+         所以「长辈慎点」这句警告撤掉了——它不再是那种一片小点的图。 -->
+    <view class="big-btns">
+      <view
+        class="bb {{view === 'mine' ? 'bb-on' : ''}}"
+        data-key="mine"
+        hover-class="bb-hover"
+        hover-stay-time="60"
+        bindtap="onSwitchView"
+      >一键查我这一支</view>
+      <view
+        class="bb {{view === 'overview' ? 'bb-on' : ''}}"
+        data-key="overview"
+        hover-class="bb-hover"
+        hover-stay-time="60"
+        bindtap="onSwitchView"
+      >全族大宏图</view>
+    </view>
+  </view>
+
+  <!-- ============ 未认领提示 ============ -->
+  <view wx:if="{{needClaim && !loading}}" class="notice" bindtap="onGoClaim">
+    <text class="notice-t">这是在下的世系。答两个名字就能对上「我」→</text>
+  </view>
+
+  <!-- ============ 树 ============ -->
+  <view class="stage-wrap">
+    <!-- 连宗族都没定下来（后端不可达）。和下面的"树加载失败"不同：
+         那种情况还有 familyId，重拉一次即可；这里得重走入族。 -->
+    <view wx:if="{{loadError}}" class="empty">
+      <view class="empty-mark">谱</view>
+      <view>{{loadError}}</view>
+      <view wx:if="{{loadErrorHint}}" class="empty-hint">{{loadErrorHint}}</view>
+      <view class="btn btn-ghost btn-sm empty-btn" bindtap="onRetry">重新加载</view>
+    </view>
+
+    <!-- 加载态 -->
+    <view wx:elif="{{loading}}" class="stage-loading">
+      <view class="skeleton sk-node" wx:for="{{[1,2,3,4,5,6]}}" wx:key="*this"></view>
+      <view class="stage-loading-tip">正在展开世系…</view>
+    </view>
+
+    <!-- 空态 -->
+    <view wx:elif="{{!nodes.length}}" class="empty">
+      <view class="empty-mark">谱</view>
+      <view>{{emptyText}}</view>
+      <view class="btn btn-ghost btn-sm empty-btn" bindtap="onRetry">重新加载</view>
+    </view>
+
+    <!-- ============ 全族大宏图：Canvas 树状图 ============
+         2026-10-29 定稿：不缩放，1:1 卡牌 + 上下左右滑动，左侧丁口统计固定。
+         认人靠名字（22px 永远可读），看关系靠连线，看规模靠左栏各代人数。
+         不缩放的理由：564 人整屏适配字号 0.47px，等于一片糊点；
+         缩放又给长辈多一层操作。点一个人 → 浮出操作环
+        （上父母 / 下子女 / 左配偶 / 右详——详直接进个人页），环浮在树之上。 -->
+    <view wx:elif="{{view === 'overview'}}" class="ov-wrap">
+      <tree-canvas
+        id="ovcanvas"
+        nodes="{{nodes}}"
+        edges="{{edges}}"
+        stats="{{stats}}"
+        cw="{{canvas.width}}"
+        ch="{{canvas.height}}"
+        focusId="{{ovFocus || 0}}"
+        bind:nodetap="onOvNodeTap"
+      />
+    </view>
+
+    <!-- ============ 世系垂直卡片流（mine 视图） ============
+         横排树 + 拖拽缩放退役：手机屏幕上"全景地图"对长辈是认知负担。
+         新交互是单向上下滑动的代际流：左侧世代徽章 + 细墨线贯穿，
+         每张人物卡可内联展开（基本信息/子女/动作），不再需要任何缩放工具。 -->
+    <scroll-view
+      wx:else
+      class="stage flow"
+      scroll-y
+      enhanced
+      show-scrollbar="{{false}}"
+      scroll-into-view="{{flowInto}}"
+    >
+      <!-- 上面还有世代：把最上面那位长辈设为中心，他的先人就出现在上一屏 -->
+      <view
+        wx:if="{{truncated && truncated.up}}"
+        class="flow-more flow-more-up"
+        hover-class="flow-more-hover"
+        bindtap="onFlowUp"
+      >更上一世 · 看看长辈那一支 ↑</view>
+
+      <view
+        wx:for="{{flow}}"
+        wx:key="gen"
+        id="fgen{{item.gen}}"
+        class="fgen"
+      >
+        <!-- 贯穿整条流的细墨线：代际纵深靠它表达，代替原来横七竖八的树线 -->
+        <view class="fgen-thread"></view>
+        <view class="fgen-badge">{{item.label}}</view>
+
+        <view
+          wx:for="{{item.cards}}"
+          wx:for-item="c"
+          wx:key="id"
+          class="fcard {{c.open ? 'fcard-open' : ''}} {{c.onPath ? 'fcard-path' : ''}}"
+        >
+          <!-- 卡头：点一下 = 展开/收起。姓名 38rpx 加粗，长辈一眼认人 -->
+          <view class="fcard-main" data-id="{{c.id}}" bindtap="onCardTap">
+            <view class="favatar {{c.living === 2 ? 'favatar-deceased' : ''}} {{c.isSelf ? 'favatar-self' : ''}}">{{c.surname}}</view>
+            <view class="finfo">
+              <view class="fname-row">
+                <text class="fname">{{c.displayName}}</text>
+                <text wx:if="{{c.isSelf}}" class="ftag ftag-self">我</text>
+                <text wx:if="{{c.living === 2}}" class="ftag ftag-gu">故</text>
+                <!-- 角标只给"能补的人"画（服务端已按 can_edit 过滤），
+                     数字跟人走（决策 19）：这个 N 属于这张卡上的人 -->
+                <text wx:if="{{c.badge}}" class="ftag ftag-pend">还差 {{c.badge.count}} 项</text>
+              </view>
+              <view class="fmeta">{{c.meta}}</view>
+            </view>
+            <view class="fchev">
+              <!-- 「详」= 直接看这个人的详情（卡头其余部分仍是展开/收起）。
+                   原来详情只能从操作环里的「详」进，要两步且没人找得到。 -->
+              <text class="fdetail" data-id="{{c.id}}" catchtap="onCardDetail">详</text>
+              <text class="fchev-ar">{{c.open ? '⌄' : '›'}}</text>
+            </view>
+          </view>
+
+          <!-- 配偶：内嵌在卡里（虚线分隔），不再独立成卡。
+               离异只改标注与虚线，人永远留在这家（决策：配偶不因离异隐藏） -->
+          <view
+            wx:for="{{c.spouses}}"
+            wx:for-item="sp"
+            wx:key="id"
+            class="fspouse {{sp.divorced ? 'fspouse-divorced' : ''}}"
+            data-id="{{sp.id}}"
+            hover-class="fspouse-hover"
+            catchtap="onSpouseTap"
+          >
+            <view class="favatar favatar-sm {{sp.living === 2 ? 'favatar-deceased' : ''}}">{{sp.surname}}</view>
+            <text class="fsp-name">{{sp.displayName}}</text>
+            <text class="fsp-tag">{{sp.tag}}</text>
+            <!-- 配偶不是卡，点了不展开——直接看这个人的详情。
+                 没有这个箭头，用户会以为这行只是文字（2026-10-29 实报"妻子点不开"） -->
+            <text class="fsp-arrow">›</text>
+          </view>
+
+          <!-- 内联展开区 -->
+          <view wx:if="{{c.open}}" class="fexpand">
+            <view wx:if="{{c.kids.length}}" class="fsec">
+              <view class="fsec-k">子 女</view>
+              <view class="fkids">
+                <view
+                  wx:for="{{c.kids}}"
+                  wx:for-item="k"
+                  wx:key="id"
+                  class="fkid"
+                  data-id="{{k.id}}"
+                  hover-class="fkid-hover"
+                  catchtap="onFlowCenter"
+                >
+                  <text class="fkid-ava">{{k.surname}}</text>
+                  <text class="fkid-name">{{k.displayName}}</text>
+                </view>
+              </view>
+            </view>
+
+            <view class="fact-row">
+              <view
+                class="fact fact-main"
+                data-id="{{c.id}}"
+                hover-class="fact-hover"
+                catchtap="onFlowCenter"
+              >看他这一支</view>
+              <view
+                wx:if="{{c.badge}}"
+                class="fact fact-ghost"
+                data-id="{{c.id}}"
+                hover-class="fact-hover"
+                catchtap="onFlowFill"
+              >帮他补全</view>
+              <view
+                class="fact fact-ghost"
+                data-id="{{c.id}}"
+                hover-class="fact-hover"
+                catchtap="onFlowRing"
+              >加家人</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 下面还有世代 -->
+      <view
+        wx:if="{{truncated && truncated.down}}"
+        class="flow-more flow-more-down"
+        hover-class="flow-more-hover"
+        bindtap="onFlowDown"
+      >下面还有后代 · 点此下看 ↓</view>
+
+      <view class="safe-bottom"></view>
+    </scroll-view>
+
+  <!-- 规模一句话已移进全族大宏图的页头，不再浮在右上角压着世代刻度 -->
+
+    <!-- ============ 操作环（「加家人」） ============
+         排布用心智模型而不是平均分布：**上是长辈、下是晚辈、左配偶、右详情**。
+         这样"给爷爷补父亲"不用读文字，手指往左上就是父。
+         坐标按点击点的页面坐标换算（px），锚在"加家人"被点的那张卡上。 -->
+    <view wx:if="{{ring}}" class="ring-mask" catchtap="onRingClose" catchtouchmove="onRingClose"></view>
+    <block wx:if="{{ring}}">
+      <view
+        wx:for="{{ring.items}}"
+        wx:key="key"
+        class="ring-btn {{item.cls}} {{item.disabled ? 'ring-btn-off' : ''}}"
+        style="left:{{item.x}}px;top:{{item.y}}px;"
+        data-key="{{item.key}}"
+        catchtap="onRingAction"
+      >{{item.label}}</view>
+    </block>
+  </view>
+
+  <!-- ============ 底部：待补全入口 ============ -->
+  <!-- 数字和人名必须同源：pending 里的 personId 是"这条属于谁"，
+       「去补全」只能跳他。原来固定跳 claimedPersonId，于是聚焦到配偶时
+       条上写着"还差 1 项"，点进去却是自己那一页（已完整）。 -->
+  <view wx:if="{{!loading && pending && pending.missingCount > 0}}" class="ft" bindtap="onGoFill">
+    <view class="ft-left">
+      <view class="ft-title" wx:if="{{pending.isSelf}}">还差 {{pending.missingCount}} 项</view>
+      <view class="ft-title" wx:else>{{pending.displayName}}还差 {{pending.missingCount}} 项</view>
+      <view class="ft-sub">补完，后代才找得到他们</view>
+    </view>
+    <view class="ft-go">去补全 →</view>
+  </view>
+
+  <view wx:elif="{{!loading && pending && pending.missingCount === 0}}" class="ft ft-done">
+    <view class="ft-left">
+      <view class="ft-title" wx:if="{{pending.isSelf}}">您这一支已完整</view>
+      <view class="ft-title" wx:else>{{pending.displayName}}这一格已完整</view>
+      <view class="ft-sub">点树上任意节点，看看还能帮谁补一条</view>
+    </view>
+  </view>
+
+  <!-- ============ 半屏卡片 ============ -->
+  <person-sheet
+    show="{{sheetShow}}"
+    person="{{sheetPerson}}"
+    loading="{{sheetLoading}}"
+    bind:close="onSheetClose"
+    bind:action="onSheetAction"
+    bind:chiptap="onSheetChip"
+  />
+
+  <!-- ============ 找人（全屏搜索层） ============
+       同名在谱里是常态（"启"字辈常有三个启华），所以不做"搜到一个就直接跳"，
+       而是边打字边列出候选，按世次区分，用户自己认哪一个。 -->
+  <view wx:if="{{searchShow}}" class="s-mask" catchtap="onSearchClose"></view>
+  <view wx:if="{{searchShow}}" class="s-panel">
+    <view class="s-bar">
+      <text class="s-ico">⌕</text>
+      <input
+        class="s-input"
+        value="{{searchKw}}"
+        focus="{{searchShow}}"
+        placeholder="输入姓名，如「陈启明」"
+        placeholder-class="s-ph"
+        confirm-type="search"
+        bindinput="onSearchInput"
+        bindconfirm="onSearchConfirm"
+      />
+      <text class="s-cancel" catchtap="onSearchClose">取消</text>
+    </view>
+    <scroll-view class="s-list" scroll-y>
+      <view
+        wx:for="{{searchHits}}"
+        wx:key="id"
+        class="s-hit"
+        data-id="{{item.id}}"
+        data-role="{{item.lineageRole}}"
+        catchtap="onSearchPick"
+        hover-class="s-hit-hover"
+      >
+        <text class="s-hit-name ellipsis">{{item.displayName}}</text>
+        <text class="s-hit-gen">{{item.generationLabel || ''}}</text>
+      </view>
+      <view wx:if="{{searchKw && !searchHits.length}}" class="s-empty">
+        {{searchLoading ? '查找中…' : '谱里没找到这个名字'}}
+      </view>
+      <view wx:if="{{!searchKw}}" class="s-empty">
+        打一个字就够。搜到后会带他去大宏图里站的那个位置。
+      </view>
+    </scroll-view>
+  </view>
+</view>
